@@ -5,7 +5,7 @@ authors = ["vkill <vkill.net@gmail.com>"]
 edition = "2018"
 
 [[bin]]
-name = "application"
+name = "example_application"
 path = "src/main.rs"
 
 [dependencies]
