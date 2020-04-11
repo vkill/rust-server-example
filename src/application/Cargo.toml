@@ -1,0 +1,16 @@
+[package]
+name = "application"
+version = "0.1.0"
+authors = ["vkill <vkill.net@gmail.com>"]
+edition = "2018"
+
+[[bin]]
+name = "application"
+path = "src/main.rs"
+
+[dependencies]
+env_logger = "0.7.1"
+log = "0.4.8"
+async-std = "1.5.0"
+anyhow = "1.0.28"
+web = { path = "../web" }

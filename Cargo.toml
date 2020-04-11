@@ -1,0 +1,6 @@
+[workspace]
+members = [
+    "src/application",
+    "src/web",
+]
+default-members = ["src/application"]
