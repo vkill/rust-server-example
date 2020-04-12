@@ -1,25 +1,13 @@
 use crate::State;
 use tide::Server;
 
-pub struct HTTPServer {
-    pub app: Server<State>,
+pub fn get_app() -> Server<State> {
+    let state = State {};
+    let mut app = Server::with_state(state);
+    add_routes(&mut app);
+    app
 }
 
-#[cfg_attr(feature = "cargo-clippy", allow(clippy::new_without_default))]
-impl HTTPServer {
-    pub fn new() -> Self {
-        let state = State {};
-        let app = Server::with_state(state);
-        Self { app }
-    }
-
-    pub fn configure(&mut self) {
-        self.routes()
-    }
-
-    fn routes(&mut self) {
-        self.app
-            .at("/hello")
-            .get(|_| async move { "Hello, world!" });
-    }
+fn add_routes(app: &mut Server<State>) {
+    app.at("/hello").get(|_| async move { "Hello, world!" });
 }

@@ -4,8 +4,6 @@ version = "0.1.0"
 authors = ["vkill <vkill.net@gmail.com>"]
 edition = "2018"
 
-[dependencies]
-
 [dev-dependencies]
 anyhow = "1.0.28"
 surf = "1.0.3"
