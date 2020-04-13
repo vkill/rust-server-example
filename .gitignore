@@ -1,2 +1,5 @@
 /target
 .vscode
+
+/configuration/*.toml
+!/configuration/base.toml

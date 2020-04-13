@@ -5,7 +5,7 @@ authors = ["vkill <vkill.net@gmail.com>"]
 edition = "2018"
 
 [[bin]]
-name = "example_application"
+name = "application"
 path = "src/main.rs"
 
 [dependencies]
@@ -14,3 +14,5 @@ log = "0.4.8"
 async-std = "1.5.0"
 anyhow = "1.0.28"
 web = { path = "../web" }
+config = "0.10.1"
+serde = { version = "1.0", default-features = false, features = ["derive"] }
