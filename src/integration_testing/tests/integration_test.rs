@@ -25,12 +25,21 @@ async fn test_all() -> anyhow::Result<()> {
 
     task::sleep(Duration::from_secs(2)).await;
 
+    //
     let body_string = surf::get(format!("{}/hello", http_server_base_url))
         .recv_string()
         .await
         .ok();
     assert_eq!(body_string, Some("Hello, world!".into()));
 
+    //
+    let body_string = surf::get(format!("{}/myip", http_server_base_url))
+        .recv_string()
+        .await
+        .ok();
+    assert_eq!(body_string.expect("").contains(r#""ip""#), true);
+
+    //
     child.kill().expect("failed to kill process");
 
     Ok(())
