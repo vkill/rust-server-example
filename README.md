@@ -33,6 +33,8 @@ docker run --name postgres_server_example_development_migrate --rm -v $(pwd)/pos
 
 ```
 cp configuration/base.toml configuration/development.toml
+
+cp .env.example .env
 ```
 
 ```

@@ -1,0 +1,19 @@
+[package]
+name = "db"
+version = "0.1.0"
+authors = ["vkill <vkill.net@gmail.com>"]
+edition = "2018"
+
+[lib]
+name = "db"
+path = "src/lib.rs"
+
+[dependencies]
+sqlx = { version = "0.3", features = ["postgres", "chrono"] }
+chrono = "0.4"
+
+[dev-dependencies]
+dotenv = "0.15.0"
+async-std = {version = "1.5.0", features = ["attributes"]}
+fake = "2.2.0"
+anyhow = "1.0.27"

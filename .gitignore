@@ -3,3 +3,5 @@
 
 /configuration/*.toml
 !/configuration/base.toml
+
+/.env

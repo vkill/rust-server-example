@@ -2,6 +2,7 @@
 members = [
     "src/application",
     "src/web",
+    "src/db",
     "src/integration_testing",
 ]
 default-members = ["src/application"]

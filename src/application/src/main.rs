@@ -1,8 +1,11 @@
 use application::Configuration;
 use async_std::task;
+use dotenv::dotenv;
 use std::path::PathBuf;
 
 fn main() -> anyhow::Result<()> {
+    dotenv().ok();
+
     let configuration =
         Configuration::new(PathBuf::default()).expect("Failed to load configuration");
     env_logger::init();
