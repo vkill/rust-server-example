@@ -2,7 +2,7 @@ use super::mapper::*;
 use crate::Connection;
 use chrono::Utc;
 
-pub async fn insert<'a>(connection: &Connection, user: &NewUser<'a>) -> crate::Result<User> {
+pub async fn insert(connection: &Connection, user: &NewUser<'_>) -> crate::Result<User> {
     sqlx::query_as!(
         User,
         r#"
