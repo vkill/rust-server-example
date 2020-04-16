@@ -1,14 +1,24 @@
-use sqlx::PgPool;
+use sqlx::{pool::PoolConnection, Database, Pool};
 
 #[derive(Clone)]
-pub struct Connection {
-    pub pool: PgPool,
+pub struct Connection<DB>
+where
+    DB: Database,
+{
+    pool: Pool<DB::Connection>,
 }
 
-impl Connection {
-    pub async fn new(url: &str) -> Result<Self, sqlx::Error> {
-        let pool = PgPool::new(url).await?;
+impl<DB> Connection<DB>
+where
+    DB: Database,
+{
+    pub async fn new(url: &str) -> crate::Result<Self> {
+        let pool: Pool<DB::Connection> = Pool::new(url).await?;
 
         Ok(Self { pool })
+    }
+
+    pub async fn conn(&self) -> crate::Result<PoolConnection<DB::Connection>> {
+        self.pool.acquire().await
     }
 }

@@ -1,8 +1,8 @@
 use super::mapper::*;
-use crate::Connection;
 use chrono::Utc;
+use sqlx::PgConnection;
 
-pub async fn insert(connection: &Connection, user: &NewUser<'_>) -> crate::Result<User> {
+pub async fn insert(conn: &mut PgConnection, user: &NewUser<'_>) -> crate::Result<User> {
     sqlx::query_as!(
         User,
         r#"
@@ -37,6 +37,6 @@ RETURNING
         Utc::now().naive_utc(),
         Utc::now().naive_utc()
     )
-    .fetch_one(&connection.pool)
+    .fetch_one(conn)
     .await
 }

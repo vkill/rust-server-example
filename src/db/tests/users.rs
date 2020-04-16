@@ -1,5 +1,5 @@
 mod helpers;
-use helpers::get_test_connection;
+use helpers::get_postgres_connection;
 
 use db::users::mapper::*;
 use db::users::query::*;
@@ -11,7 +11,8 @@ use fake::Fake;
 
 #[async_std::test]
 async fn test_insert() -> anyhow::Result<()> {
-    let connection = get_test_connection().await?;
+    let connection = get_postgres_connection().await?;
+    let mut conn = connection.conn().await?;
 
     let new_user = NewUser {
         username: &Username(EN).fake::<String>(),
@@ -23,7 +24,7 @@ async fn test_insert() -> anyhow::Result<()> {
         user_status: Some(1),
     };
 
-    let user = insert(&connection, &new_user).await?;
+    let user = insert(&mut conn, &new_user).await?;
 
     assert!(user.id > 0);
     assert_eq!(user.email, new_user.email);
