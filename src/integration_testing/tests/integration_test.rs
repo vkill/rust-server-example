@@ -33,7 +33,7 @@ async fn test_all() -> anyhow::Result<()> {
     assert_eq!(body_string, Some("Hello, world!".into()));
 
     //
-    let body_string = surf::get(format!("{}/myip", http_server_base_url))
+    let body_string = surf::get(format!("{}/server_ip", http_server_base_url))
         .recv_string()
         .await
         .ok();

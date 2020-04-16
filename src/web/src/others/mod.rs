@@ -1,2 +1,2 @@
-mod myip;
-pub use myip::myip;
+mod server_ip;
+pub use server_ip::server_ip;

@@ -11,8 +11,8 @@ pub fn get_app() -> Server<State> {
 fn add_routes(app: &mut Server<State>) {
     app.at("/hello").get(|_| async move { "Hello, world!" });
 
-    app.at("/myip")
-        .get(|req| async move { result_to_response(crate::others::myip(req).await) });
+    app.at("/server_ip")
+        .get(|req| async move { result_to_response(crate::others::server_ip(req).await) });
 }
 
 //
