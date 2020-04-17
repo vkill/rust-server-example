@@ -22,7 +22,7 @@ async fn test_insert() -> anyhow::Result<()> {
         email: &FreeEmail(EN).fake::<String>(),
         encrypted_password: &Password(EN, 8..20).fake::<String>(),
         phone: None,
-        user_status: Some(1),
+        user_status: 1,
     };
 
     let dt_per_insert = Utc::now().naive_utc();

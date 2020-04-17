@@ -6,6 +6,12 @@ pub struct ResponseError {
     resp: Response,
 }
 
+impl ResponseError {
+    pub fn new(resp: Response) -> Self {
+        Self { resp }
+    }
+}
+
 impl IntoResponse for ResponseError {
     fn into_response(self) -> Response {
         self.resp
@@ -13,6 +19,14 @@ impl IntoResponse for ResponseError {
 }
 
 //
+// common
+//
+impl From<tide::Response> for ResponseError {
+    fn from(resp: tide::Response) -> Self {
+        Self { resp }
+    }
+}
+
 impl From<Box<dyn std::error::Error + Send + Sync>> for ResponseError {
     fn from(_: Box<dyn std::error::Error + Send + Sync>) -> Self {
         // TODO, set body
@@ -21,7 +35,6 @@ impl From<Box<dyn std::error::Error + Send + Sync>> for ResponseError {
     }
 }
 
-//
 impl From<serde_json::error::Error> for ResponseError {
     fn from(_: serde_json::error::Error) -> Self {
         // TODO, set body

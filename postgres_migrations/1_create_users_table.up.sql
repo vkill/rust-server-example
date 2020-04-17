@@ -6,7 +6,7 @@ CREATE TABLE "users" (
     email varchar(256) NOT NULL UNIQUE,
     encrypted_password varchar(256) NOT NULL,
     phone varchar(256),
-    user_status int DEFAULT 1,
+    user_status int NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );

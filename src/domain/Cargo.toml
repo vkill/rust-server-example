@@ -1,0 +1,14 @@
+[package]
+name = "domain"
+version = "0.1.0"
+authors = ["vkill <vkill.net@gmail.com>"]
+edition = "2018"
+
+[lib]
+name = "domain"
+path = "src/lib.rs"
+
+[dependencies]
+thiserror = "1.0.15"
+anyhow = "1.0.28"
+bcrypt = "0.7.0"

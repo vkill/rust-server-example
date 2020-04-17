@@ -177,6 +177,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7d5ca2cd0adc3f48f9e9ea5a6bbdf9ccc0bfade884847e484d452414c7ccffb3"
 
 [[package]]
+name = "bcrypt"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6f02d7d008a57bcb2251ba115b803934e02315edbde9a861c88713493e381b63"
+dependencies = [
+ "base64",
+ "blowfish",
+ "byteorder",
+ "lazy_static",
+ "rand",
+]
+
+[[package]]
 name = "bitflags"
 version = "1.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -195,12 +208,32 @@ dependencies = [
 ]
 
 [[package]]
+name = "block-cipher-trait"
+version = "0.6.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1c924d49bd09e7c06003acda26cd9742e796e34282ec6c1189404dee0c1f4774"
+dependencies = [
+ "generic-array",
+]
+
+[[package]]
 name = "block-padding"
 version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fa79dedbb091f449f1f39e53edf88d5dbe95f895dae6135a8d7b881fb5af73f5"
 dependencies = [
  "byte-tools",
+]
+
+[[package]]
+name = "blowfish"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6aeb80d00f2688459b8542068abd974cfb101e7a82182414a99b5026c0d85cc3"
+dependencies = [
+ "block-cipher-trait",
+ "byteorder",
+ "opaque-debug",
 ]
 
 [[package]]
@@ -475,6 +508,15 @@ name = "doc-comment"
 version = "0.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fea41bba32d969b513997752735605054bc0dfa92b4c56bf1189f2e174be7a10"
+
+[[package]]
+name = "domain"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "bcrypt",
+ "thiserror",
+]
 
 [[package]]
 name = "dotenv"
@@ -2302,6 +2344,7 @@ name = "web"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "domain",
  "log",
  "serde 1.0.106",
  "serde_json",

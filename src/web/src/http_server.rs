@@ -13,6 +13,9 @@ fn add_routes(app: &mut Server<State>) {
 
     app.at("/server_ip")
         .get(|req| async move { result_to_response(crate::others::server_ip(req).await) });
+
+    app.at("/users")
+        .post(|req| async move { result_to_response(crate::users::sign_up(req).await) });
 }
 
 //
