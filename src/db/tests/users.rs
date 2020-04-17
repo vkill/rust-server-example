@@ -4,6 +4,7 @@ use helpers::get_postgres_connection;
 use db::users::mapper::*;
 use db::users::query::*;
 
+use chrono::Utc;
 use fake::faker::internet::raw::*;
 use fake::faker::name::raw::*;
 use fake::locales::EN;
@@ -24,10 +25,13 @@ async fn test_insert() -> anyhow::Result<()> {
         user_status: Some(1),
     };
 
-    let user = insert(&mut conn, &new_user).await?;
+    let dt_per_insert = Utc::now().naive_utc();
 
-    assert!(user.id > 0);
-    assert_eq!(user.email, new_user.email);
+    let (id, created_at) = insert(&mut conn, &new_user).await?;
+
+    assert!(id > 0);
+    assert!(created_at >= dt_per_insert);
+    assert!(created_at <= Utc::now().naive_utc());
 
     Ok(())
 }
