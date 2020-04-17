@@ -1,3 +1,4 @@
+use repository::domain;
 use tide::{IntoResponse, Response};
 
 //
@@ -40,5 +41,16 @@ impl From<serde_json::error::Error> for ResponseError {
         // TODO, set body
         let resp = Response::new(500);
         Self { resp }
+    }
+}
+
+//
+// domain common
+//
+impl From<domain::UserPasswordError> for ResponseError {
+    fn from(_: domain::UserPasswordError) -> Self {
+        // TODO, set body
+        let resp = Response::new(500);
+        Self::new(resp)
     }
 }

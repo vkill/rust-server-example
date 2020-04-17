@@ -1,4 +1,5 @@
 use crate::{ResponseError, State};
+use repository::{domain, domain::UserRepository};
 use serde::Deserialize;
 use std::convert::{TryFrom, TryInto};
 use tide::{Request, Response};
@@ -11,8 +12,12 @@ pub async fn sign_up(mut req: Request<State>) -> Result<Response, ResponseError>
 
     let user: domain::UserForCreate = req_body.try_into()?;
 
+    let repository = &req.state().repository;
+
+    let user_id = repository.create_user(user).await?;
+
     // TODO
-    panic!("")
+    Ok(Response::new(200).body_string(format!("{}", user_id)))
 }
 
 #[derive(Deserialize, Debug)]
@@ -40,8 +45,8 @@ impl TryFrom<SignUpRequestBody> for domain::UserForCreate {
     }
 }
 
-impl From<domain::UserPasswordError> for ResponseError {
-    fn from(_: domain::UserPasswordError) -> Self {
+impl From<domain::CreateUserError> for ResponseError {
+    fn from(_: domain::CreateUserError) -> Self {
         // TODO, set body
         let resp = Response::new(500);
         Self::new(resp)

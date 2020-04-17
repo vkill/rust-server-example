@@ -1,8 +1,9 @@
 use crate::State;
+use repository::Repository;
 use tide::{IntoResponse, Response, Server};
 
-pub fn get_app() -> Server<State> {
-    let state = State {};
+pub fn get_app(repository: Repository) -> Server<State> {
+    let state = State { repository };
     let mut app = Server::with_state(state);
     add_routes(&mut app);
     app

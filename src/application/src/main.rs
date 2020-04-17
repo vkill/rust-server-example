@@ -1,6 +1,7 @@
 use application::Configuration;
 use async_std::task;
 use dotenv::dotenv;
+use repository::{Connection as DBConnection, Postgres, Repository};
 use std::path::PathBuf;
 
 fn main() -> anyhow::Result<()> {
@@ -20,7 +21,13 @@ fn main() -> anyhow::Result<()> {
 }
 
 async fn run_http_server(addr: String) -> anyhow::Result<()> {
-    let http_server = web::get_http_server();
+    let postgres_connection =
+        DBConnection::<Postgres>::new(&dotenv::var("DATABASE_URL").ok().expect("")).await?;
+    let repository = Repository {
+        postgres_connection,
+    };
+
+    let http_server = web::get_http_server(repository);
     http_server.listen(addr).await?;
 
     Ok(())

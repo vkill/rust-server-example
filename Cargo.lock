@@ -25,6 +25,7 @@ dependencies = [
  "dotenv",
  "env_logger",
  "log",
+ "repository",
  "serde 1.0.106",
  "web",
 ]
@@ -2410,8 +2411,8 @@ name = "web"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "domain",
  "log",
+ "repository",
  "serde 1.0.106",
  "serde_json",
  "surf",
