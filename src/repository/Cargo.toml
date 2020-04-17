@@ -1,16 +1,16 @@
 [package]
-name = "domain"
+name = "repository"
 version = "0.1.0"
 authors = ["vkill <vkill.net@gmail.com>"]
 edition = "2018"
 
 [lib]
-name = "domain"
+name = "repository"
 path = "src/lib.rs"
 
 [dependencies]
-thiserror = "1.0.15"
-anyhow = "1.0.28"
-bcrypt = "0.7.0"
 async-trait = "0.1.30"
-num_enum = "0.4.3"
+domain = { path = "../domain" }
+db = { path = "../db" }
+anyhow = "1.0.28"
+futures-util = "0.3.4"

@@ -4,6 +4,7 @@ members = [
     "src/web",
     "src/db",
     "src/domain",
+    "src/repository",
     "src/integration_testing",
 ]
 default-members = ["src/application"]

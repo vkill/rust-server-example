@@ -1,4 +1,5 @@
 use crate::UserPassword;
+use crate::UserStatus;
 
 #[derive(Debug)]
 pub struct UserForCreate {
@@ -14,17 +15,13 @@ pub struct UserProfile {
     pub phone: Option<String>,
 }
 
-#[derive(Debug)]
-pub enum UserStatus {
-    Active = 1,
-    Inactive = 2,
-}
+pub type UserID = i64;
 
 #[derive(Debug)]
 pub struct User {
-    pub id: i64,
+    pub id: UserID,
     pub username: String,
     pub email: String,
-    pub user_status: i32,
+    pub status: UserStatus,
     pub profile: UserProfile,
 }

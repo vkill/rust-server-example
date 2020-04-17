@@ -1,4 +1,4 @@
-use crate::UserPasswordError;
+use super::UserPasswordError;
 
 #[derive(Debug)]
 pub struct UserPassword {
