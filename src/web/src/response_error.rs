@@ -1,5 +1,5 @@
 use repository::domain;
-use tide::{http_types::StatusCode, IntoResponse, Response};
+use tide::{http_types, http_types::StatusCode, IntoResponse, Response};
 
 //
 #[derive(Debug)]
@@ -28,6 +28,14 @@ impl From<tide::Response> for ResponseError {
 
 impl From<Box<dyn std::error::Error + Send + Sync>> for ResponseError {
     fn from(_: Box<dyn std::error::Error + Send + Sync>) -> Self {
+        // TODO, set body
+        let resp = Response::new(StatusCode::InternalServerError);
+        Self { resp }
+    }
+}
+
+impl From<http_types::Error> for ResponseError {
+    fn from(_: http_types::Error) -> Self {
         // TODO, set body
         let resp = Response::new(StatusCode::InternalServerError);
         Self { resp }
