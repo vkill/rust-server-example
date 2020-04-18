@@ -20,8 +20,6 @@ impl IntoResponse for ResponseError {
 }
 
 //
-// common
-//
 impl From<tide::Response> for ResponseError {
     fn from(resp: tide::Response) -> Self {
         Self { resp }
@@ -53,10 +51,26 @@ impl From<jsonwebtoken::errors::Error> for ResponseError {
 }
 
 //
-// domain common
+// domain
 //
 impl From<domain::UserPasswordError> for ResponseError {
     fn from(_: domain::UserPasswordError) -> Self {
+        // TODO, set body
+        let resp = Response::new(500);
+        Self::new(resp)
+    }
+}
+
+impl From<domain::CreateUserError> for ResponseError {
+    fn from(_: domain::CreateUserError) -> Self {
+        // TODO, set body
+        let resp = Response::new(500);
+        Self::new(resp)
+    }
+}
+
+impl From<domain::GetUserByEmailAndPasswordError> for ResponseError {
+    fn from(_: domain::GetUserByEmailAndPasswordError) -> Self {
         // TODO, set body
         let resp = Response::new(500);
         Self::new(resp)

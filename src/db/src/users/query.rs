@@ -47,3 +47,9 @@ RETURNING
 
     Ok((r.id, created_at))
 }
+
+pub async fn find_by_email(conn: &mut PgConnection, email: &str) -> crate::Result<User> {
+    sqlx::query_as!(User, r#"SELECT * FROM users where email = $1"#, email)
+        .fetch_one(conn)
+        .await
+}

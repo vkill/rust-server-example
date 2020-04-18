@@ -20,6 +20,9 @@ fn add_routes(app: &mut Server<State>) {
 
     app.at("/users")
         .post(|req| async move { result_to_response(crate::users::sign_up(req).await) });
+
+    app.at("/users/sign_in")
+        .post(|req| async move { result_to_response(crate::users::sign_in(req).await) });
 }
 
 //

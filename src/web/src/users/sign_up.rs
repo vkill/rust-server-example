@@ -50,11 +50,3 @@ impl TryFrom<SignUpRequestBody> for domain::UserForCreate {
         Ok(user)
     }
 }
-
-impl From<domain::CreateUserError> for ResponseError {
-    fn from(_: domain::CreateUserError) -> Self {
-        // TODO, set body
-        let resp = Response::new(500);
-        Self::new(resp)
-    }
-}

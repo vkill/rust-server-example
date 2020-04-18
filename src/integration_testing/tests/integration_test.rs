@@ -43,12 +43,14 @@ async fn test_all() -> anyhow::Result<()> {
         .ok();
     assert_eq!(resp_body_string.expect("").contains(r#""ip""#), true);
 
+    let email = FreeEmail(EN).fake::<String>();
+    let password = Password(EN, 8..20).fake::<String>();
     //
     let req_body_json = serde_json::json!({
         "user": {
             "username": &Username(EN).fake::<String>(),
-            "email": &FreeEmail(EN).fake::<String>(),
-            "password": &Password(EN, 8..20).fake::<String>()
+            "email": &email,
+            "password": &password
         }
     });
     let mut res = surf::post(format!("{}/users", http_server_base_url))
@@ -57,6 +59,22 @@ async fn test_all() -> anyhow::Result<()> {
         .ok()
         .expect("");
     assert_eq!(res.status(), 201);
+    let resp_body_string = res.body_string().await.ok();
+    assert_eq!(resp_body_string.expect("").contains(r#""token""#), true);
+
+    //
+    let req_body_json = serde_json::json!({
+        "user": {
+            "email": &email,
+            "password": &password
+        }
+    });
+    let mut res = surf::post(format!("{}/users/sign_in", http_server_base_url))
+        .body_json(&req_body_json)?
+        .await
+        .ok()
+        .expect("");
+    assert_eq!(res.status(), 200);
     let resp_body_string = res.body_string().await.ok();
     assert_eq!(resp_body_string.expect("").contains(r#""token""#), true);
 

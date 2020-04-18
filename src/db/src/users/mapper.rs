@@ -10,6 +10,7 @@ pub struct NewUser<'a> {
     pub status: i32,
 }
 
+#[derive(Clone)]
 pub struct User {
     pub id: i64,
     pub username: String,
