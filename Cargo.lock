@@ -1015,6 +1015,8 @@ dependencies = [
  "anyhow",
  "assert_cmd",
  "async-std",
+ "fake",
+ "serde_json",
  "surf",
 ]
 

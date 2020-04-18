@@ -4,6 +4,10 @@ use std::panic;
 use std::process::Command;
 use std::time::Duration;
 
+use fake::faker::internet::raw::*;
+use fake::locales::EN;
+use fake::Fake;
+
 #[async_std::test]
 async fn test_all() -> anyhow::Result<()> {
     let port = 5001;
@@ -26,18 +30,35 @@ async fn test_all() -> anyhow::Result<()> {
     task::sleep(Duration::from_secs(2)).await;
 
     //
-    let body_string = surf::get(format!("{}/hello", http_server_base_url))
+    let resp_body_string = surf::get(format!("{}/hello", http_server_base_url))
         .recv_string()
         .await
         .ok();
-    assert_eq!(body_string, Some("Hello, world!".into()));
+    assert_eq!(resp_body_string, Some("Hello, world!".into()));
 
     //
-    let body_string = surf::get(format!("{}/server_ip", http_server_base_url))
+    let resp_body_string = surf::get(format!("{}/server_ip", http_server_base_url))
         .recv_string()
         .await
         .ok();
-    assert_eq!(body_string.expect("").contains(r#""ip""#), true);
+    assert_eq!(resp_body_string.expect("").contains(r#""ip""#), true);
+
+    //
+    let req_body_json = serde_json::json!({
+        "user": {
+            "username": &Username(EN).fake::<String>(),
+            "email": &FreeEmail(EN).fake::<String>(),
+            "password": &Password(EN, 8..20).fake::<String>()
+        }
+    });
+    let mut res = surf::post(format!("{}/users", http_server_base_url))
+        .body_json(&req_body_json)?
+        .await
+        .ok()
+        .expect("");
+    assert_eq!(res.status(), 201);
+    let resp_body_string = res.body_string().await.ok();
+    assert_eq!(resp_body_string.expect("").contains(r#""token""#), true);
 
     //
     child.kill().expect("failed to kill process");

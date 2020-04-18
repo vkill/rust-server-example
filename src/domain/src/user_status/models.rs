@@ -3,7 +3,7 @@ use num_enum::IntoPrimitive;
 use num_enum::TryFromPrimitive;
 use std::convert::TryFrom;
 
-#[derive(Debug, Clone, IntoPrimitive, TryFromPrimitive)]
+#[derive(IntoPrimitive, TryFromPrimitive, Clone)]
 #[repr(u32)]
 pub enum UserStatus {
     Active = 1,

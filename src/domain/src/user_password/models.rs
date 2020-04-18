@@ -1,6 +1,5 @@
 use super::UserPasswordError;
 
-#[derive(Debug)]
 pub struct UserPassword {
     hash: String,
 }

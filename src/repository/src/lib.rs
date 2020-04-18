@@ -8,6 +8,7 @@ pub use repository::Repository;
 
 mod utils;
 use utils::to_domain_database_error;
+use utils::W;
 
 //
 mod users;

@@ -7,7 +7,7 @@ pub struct NewUser<'a> {
     pub email: &'a str,
     pub encrypted_password: &'a str,
     pub phone: Option<&'a str>,
-    pub user_status: i32,
+    pub status: i32,
 }
 
 pub struct User {
@@ -18,7 +18,7 @@ pub struct User {
     pub email: String,
     pub encrypted_password: String,
     pub phone: Option<String>,
-    pub user_status: i32,
+    pub status: i32,
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
 }

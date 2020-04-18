@@ -1,6 +1,5 @@
 use sqlx::{pool::PoolConnection, Database, Pool};
 
-#[derive(Clone)]
 pub struct Connection<DB>
 where
     DB: Database,

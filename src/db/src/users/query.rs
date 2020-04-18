@@ -2,24 +2,24 @@ use super::mapper::*;
 use chrono::{NaiveDateTime, Utc};
 use sqlx::PgConnection;
 
-struct InsertReturning {
-    id: i64,
-}
-
 pub async fn insert(
     conn: &mut PgConnection,
     new_user: &NewUser<'_>,
 ) -> crate::Result<(i64, NaiveDateTime)> {
     let created_at = Utc::now().naive_utc();
 
+    struct Returning {
+        id: i64,
+    }
+
     let r = sqlx::query_as!(
-        InsertReturning,
+        Returning,
         r#"
 INSERT INTO users
     (
         username, first_name, last_name, 
         email, encrypted_password, 
-        phone, user_status, 
+        phone, status, 
         created_at, updated_at
     )
 VALUES
@@ -38,7 +38,7 @@ RETURNING
         new_user.email,
         new_user.encrypted_password,
         new_user.phone,
-        new_user.user_status,
+        new_user.status,
         created_at,
         created_at,
     )

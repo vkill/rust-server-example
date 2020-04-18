@@ -1,3 +1,4 @@
+use super::UserResponseBody;
 use crate::{ResponseError, State};
 use repository::{domain, domain::UserRepository};
 use serde::Deserialize;
@@ -14,10 +15,16 @@ pub async fn sign_up(mut req: Request<State>) -> Result<Response, ResponseError>
 
     let repository = &req.state().repository;
 
-    let user_id = repository.create_user(user).await?;
+    let user = repository.create_user(user).await?;
 
     // TODO
-    Ok(Response::new(200).body_string(format!("{}", user_id)))
+    let token = "".to_string();
+
+    let resp_body: UserResponseBody = (user, token).into();
+
+    let resp = Response::new(201).body_json(&resp_body)?;
+
+    Ok(resp)
 }
 
 #[derive(Deserialize, Debug)]

@@ -3,13 +3,13 @@ use serde::Deserialize;
 use std::env;
 use std::path::PathBuf;
 
-#[derive(Debug, Deserialize)]
+#[derive(Deserialize)]
 pub struct HTTPServer {
     pub host: String,
     pub port: u32,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Deserialize)]
 pub struct Configuration {
     pub http_server: HTTPServer,
 }
