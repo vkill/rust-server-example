@@ -2,8 +2,11 @@ use crate::State;
 use repository::Repository;
 use tide::{IntoResponse, Response, Server};
 
-pub fn get_app(repository: Repository) -> Server<State> {
-    let state = State { repository };
+pub fn get_app(repository: Repository, jwt_hs_secret: String) -> Server<State> {
+    let state = State {
+        repository,
+        jwt_hs_secret,
+    };
     let mut app = Server::with_state(state);
     add_routes(&mut app);
     app

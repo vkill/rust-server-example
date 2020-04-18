@@ -7,5 +7,8 @@ use state::State;
 mod response_error;
 use response_error::ResponseError;
 
+mod token;
+use token::{decode_token, encode_token};
+
 mod others;
 mod users;

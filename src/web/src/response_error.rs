@@ -44,6 +44,14 @@ impl From<serde_json::error::Error> for ResponseError {
     }
 }
 
+impl From<jsonwebtoken::errors::Error> for ResponseError {
+    fn from(_: jsonwebtoken::errors::Error) -> Self {
+        // TODO, set body
+        let resp = Response::new(500);
+        Self::new(resp)
+    }
+}
+
 //
 // domain common
 //

@@ -1,5 +1,5 @@
 use super::UserResponseBody;
-use crate::{ResponseError, State};
+use crate::{encode_token, ResponseError, State};
 use repository::{domain, domain::UserRepository};
 use serde::Deserialize;
 use std::convert::{TryFrom, TryInto};
@@ -17,8 +17,7 @@ pub async fn sign_up(mut req: Request<State>) -> Result<Response, ResponseError>
 
     let user = repository.create_user(user).await?;
 
-    // TODO
-    let token = "".to_string();
+    let token = encode_token(user.id, &req.state().jwt_hs_secret)?;
 
     let resp_body: UserResponseBody = (user, token).into();
 
