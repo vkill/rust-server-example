@@ -3,13 +3,13 @@ use crate::{encode_token, ResponseError, State};
 use repository::{domain, domain::UserRepository};
 use serde::Deserialize;
 use std::convert::{TryFrom, TryInto};
-use tide::{Request, Response};
+use tide::{http_types::StatusCode, Request, Response};
 
 pub async fn sign_up(mut req: Request<State>) -> Result<Response, ResponseError> {
     let req_body: SignUpRequestBody = req
         .body_json()
         .await
-        .map_err(|e| Response::new(400).body_string(e.to_string()))?;
+        .map_err(|e| Response::new(StatusCode::BadRequest).body_string(e.to_string()))?;
 
     let user: domain::UserForCreate = req_body.try_into()?;
 
@@ -21,7 +21,7 @@ pub async fn sign_up(mut req: Request<State>) -> Result<Response, ResponseError>
 
     let resp_body: UserResponseBody = (user, token).into();
 
-    let resp = Response::new(201).body_json(&resp_body)?;
+    let resp = Response::new(StatusCode::Created).body_json(&resp_body)?;
 
     Ok(resp)
 }

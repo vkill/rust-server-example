@@ -1,5 +1,5 @@
 use repository::domain;
-use tide::{IntoResponse, Response};
+use tide::{http_types::StatusCode, IntoResponse, Response};
 
 //
 #[derive(Debug)]
@@ -29,7 +29,7 @@ impl From<tide::Response> for ResponseError {
 impl From<Box<dyn std::error::Error + Send + Sync>> for ResponseError {
     fn from(_: Box<dyn std::error::Error + Send + Sync>) -> Self {
         // TODO, set body
-        let resp = Response::new(500);
+        let resp = Response::new(StatusCode::InternalServerError);
         Self { resp }
     }
 }
@@ -37,7 +37,7 @@ impl From<Box<dyn std::error::Error + Send + Sync>> for ResponseError {
 impl From<serde_json::error::Error> for ResponseError {
     fn from(_: serde_json::error::Error) -> Self {
         // TODO, set body
-        let resp = Response::new(500);
+        let resp = Response::new(StatusCode::InternalServerError);
         Self { resp }
     }
 }
@@ -45,7 +45,7 @@ impl From<serde_json::error::Error> for ResponseError {
 impl From<jsonwebtoken::errors::Error> for ResponseError {
     fn from(_: jsonwebtoken::errors::Error) -> Self {
         // TODO, set body
-        let resp = Response::new(500);
+        let resp = Response::new(StatusCode::InternalServerError);
         Self::new(resp)
     }
 }
@@ -56,7 +56,7 @@ impl From<jsonwebtoken::errors::Error> for ResponseError {
 impl From<domain::UserPasswordError> for ResponseError {
     fn from(_: domain::UserPasswordError) -> Self {
         // TODO, set body
-        let resp = Response::new(500);
+        let resp = Response::new(StatusCode::InternalServerError);
         Self::new(resp)
     }
 }
@@ -64,7 +64,7 @@ impl From<domain::UserPasswordError> for ResponseError {
 impl From<domain::CreateUserError> for ResponseError {
     fn from(_: domain::CreateUserError) -> Self {
         // TODO, set body
-        let resp = Response::new(500);
+        let resp = Response::new(StatusCode::InternalServerError);
         Self::new(resp)
     }
 }
@@ -72,7 +72,7 @@ impl From<domain::CreateUserError> for ResponseError {
 impl From<domain::GetUserByEmailAndPasswordError> for ResponseError {
     fn from(_: domain::GetUserByEmailAndPasswordError) -> Self {
         // TODO, set body
-        let resp = Response::new(500);
+        let resp = Response::new(StatusCode::InternalServerError);
         Self::new(resp)
     }
 }
