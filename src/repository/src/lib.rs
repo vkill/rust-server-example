@@ -4,11 +4,11 @@ pub use domain;
 
 //
 mod repository;
-pub use repository::Repository;
+pub use self::repository::Repository;
 
 mod utils;
 use utils::to_domain_database_error;
 use utils::W;
 
 //
-mod users;
+mod users_repository;

@@ -26,11 +26,11 @@ impl domain::UserRepository for crate::Repository {
             .map_err(|e| to_domain_database_error(e))
             .await?;
 
-        let (id, _) = db::users::insert(&mut conn, &new_user)
+        let (user_id, _) = db::users::insert(&mut conn, &new_user)
             .map_err(|e| to_domain_database_error(e))
             .await?;
 
-        let W(user) = (new_user, id, status).into();
+        let W(user) = (new_user, user_id, status).into();
 
         Ok(user)
     }
@@ -38,20 +38,20 @@ impl domain::UserRepository for crate::Repository {
 
 impl From<(db::NewUser<'_>, domain::UserID, domain::UserStatus)> for W<domain::User> {
     fn from(t: (db::NewUser<'_>, domain::UserID, domain::UserStatus)) -> Self {
-        let (user, id, status) = t;
+        let (new_user, user_id, status) = t;
 
-        let u = domain::User {
-            id: id,
-            username: user.username.into(),
-            email: user.email.into(),
+        let user = domain::User {
+            id: user_id,
+            username: new_user.username.into(),
+            email: new_user.email.into(),
             status: status,
             profile: domain::UserProfile {
-                first_name: user.first_name.map(|x| x.into()),
-                last_name: user.last_name.map(|x| x.into()),
-                phone: user.phone.map(|x| x.into()),
+                first_name: new_user.first_name.map(|x| x.into()),
+                last_name: new_user.last_name.map(|x| x.into()),
+                phone: new_user.phone.map(|x| x.into()),
             },
         };
 
-        W(u)
+        W(user)
     }
 }
