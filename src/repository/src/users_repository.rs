@@ -1,11 +1,14 @@
-use crate::{to_domain_database_error, W};
+use crate::{to_domain_repository_error, W};
 use async_trait::async_trait;
 use domain::*;
 use futures_util::future::TryFutureExt;
 
 #[async_trait]
 impl UserRepository for crate::Repository {
-    async fn create_user(&self, user: UserForCreate) -> Result<User, CreateUserError> {
+    async fn create_user(
+        &self,
+        user: UserForCreate,
+    ) -> domain::RepositoryResult<User, RepositoryNoneLogicError> {
         let status = UserStatus::Active;
 
         let db_new_user = db::NewUser {
@@ -21,11 +24,11 @@ impl UserRepository for crate::Repository {
         let mut conn = self
             .postgres_connection
             .conn()
-            .map_err(|e| to_domain_database_error(e))
+            .map_err(|e| to_domain_repository_error(e))
             .await?;
 
         let (user_id, _) = db::users::insert(&mut conn, &db_new_user)
-            .map_err(|e| to_domain_database_error(e))
+            .map_err(|e| to_domain_repository_error(e))
             .await?;
 
         let W(user) = (db_new_user, user_id, status).into();
@@ -37,22 +40,25 @@ impl UserRepository for crate::Repository {
         &self,
         email: &str,
         password: &str,
-    ) -> Result<User, GetUserByEmailAndPasswordError> {
+    ) -> domain::RepositoryResult<User, GetUserByEmailAndPasswordError> {
         let mut conn = self
             .postgres_connection
             .conn()
-            .map_err(|e| to_domain_database_error(e))
+            .map_err(|e| to_domain_repository_error(e))
             .await?;
 
         let db_user = db::users::find_by_email(&mut conn, email)
             .map_err(|e| match e {
-                db::Error::RowNotFound => GetUserByEmailAndPasswordError::NotFound,
-                _ => to_domain_database_error(e).into(),
+                db::Error::RowNotFound => GetUserByEmailAndPasswordError::NotFound.into(),
+                _ => to_domain_repository_error(e),
             })
             .await?;
 
-        if !UserPassword::from_hash(db_user.clone().encrypted_password).verify(password)? {
-            return Err(GetUserByEmailAndPasswordError::NotFound);
+        if !UserPassword::from_hash(db_user.clone().encrypted_password)
+            .verify(password)
+            .map_err(|e| GetUserByEmailAndPasswordError::from(e))?
+        {
+            return Err(GetUserByEmailAndPasswordError::NotFound.into());
         }
 
         let W(user) = db_user.into();
@@ -60,17 +66,17 @@ impl UserRepository for crate::Repository {
         Ok(user)
     }
 
-    async fn get_user_by_id(&self, id: UserID) -> Result<User, GetUserByIDError> {
+    async fn get_user_by_id(&self, id: UserID) -> domain::RepositoryResult<User, GetUserByIDError> {
         let mut conn = self
             .postgres_connection
             .conn()
-            .map_err(|e| to_domain_database_error(e))
+            .map_err(|e| to_domain_repository_error(e))
             .await?;
 
         let db_user = db::users::find_by_id(&mut conn, id)
             .map_err(|e| match e {
-                db::Error::RowNotFound => GetUserByIDError::NotFound,
-                _ => to_domain_database_error(e).into(),
+                db::Error::RowNotFound => GetUserByIDError::NotFound.into(),
+                _ => to_domain_repository_error(e),
             })
             .await?;
 
@@ -83,7 +89,7 @@ impl UserRepository for crate::Repository {
         &self,
         mut user: User,
         user_profile: UserProfile,
-    ) -> Result<User, DatabaseError> {
+    ) -> domain::RepositoryResult<User, RepositoryNoneLogicError> {
         let db_update_user = db::UpdateUser {
             username: &user.username,
             first_name: user_profile.first_name.as_deref(),
@@ -94,11 +100,11 @@ impl UserRepository for crate::Repository {
         let mut conn = self
             .postgres_connection
             .conn()
-            .map_err(|e| to_domain_database_error(e))
+            .map_err(|e| to_domain_repository_error(e))
             .await?;
 
         let _ = db::users::update(&mut conn, user.id, &db_update_user)
-            .map_err(|e| to_domain_database_error(e))
+            .map_err(|e| to_domain_repository_error(e))
             .await?;
 
         user.profile.first_name = db_update_user.first_name.map(|x| x.to_owned());

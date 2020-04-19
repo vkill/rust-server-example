@@ -7,7 +7,7 @@ mod repository;
 pub use self::repository::Repository;
 
 mod utils;
-use utils::to_domain_database_error;
+use utils::to_domain_repository_error;
 use utils::W;
 
 //

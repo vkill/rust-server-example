@@ -12,3 +12,5 @@ pub use users::*;
 
 mod repository;
 pub use repository::Repository;
+
+pub type RepositoryResult<T, E> = std::result::Result<T, RepositoryError<E>>;
