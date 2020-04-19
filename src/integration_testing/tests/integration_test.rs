@@ -79,7 +79,10 @@ async fn test_all() -> anyhow::Result<()> {
     assert_eq!(res.status(), 200);
     let resp_body_string = res.body_string().await.ok();
     assert_eq!(
-        resp_body_string.clone().expect("").contains(r#""token""#),
+        resp_body_string
+            .as_deref()
+            .expect("")
+            .contains(r#""token""#),
         true
     );
 

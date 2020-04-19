@@ -18,7 +18,7 @@ impl UserRepository for crate::Repository {
             email: &user.email,
             encrypted_password: &user.password.hash(),
             phone: None,
-            status: status.clone() as i32,
+            status: status.to_owned().into(),
         };
 
         let mut conn = self
@@ -54,7 +54,7 @@ impl UserRepository for crate::Repository {
             })
             .await?;
 
-        if !UserPassword::from_hash(db_user.clone().encrypted_password)
+        if !UserPassword::from_hash(db_user.to_owned().encrypted_password)
             .verify(password)
             .map_err(|e| GetUserByEmailAndPasswordError::from(e))?
         {
