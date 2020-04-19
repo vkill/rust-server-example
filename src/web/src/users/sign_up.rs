@@ -33,19 +33,19 @@ struct SignUpRequestBody {
 
 #[derive(Deserialize, Debug)]
 struct User {
-    pub username: String,
-    pub email: String,
-    pub password: String,
+    username: String,
+    email: String,
+    password: String,
 }
 
 impl TryFrom<SignUpRequestBody> for domain::UserForCreate {
     type Error = domain::UserPasswordError;
 
-    fn try_from(r: SignUpRequestBody) -> Result<Self, Self::Error> {
+    fn try_from(body: SignUpRequestBody) -> Result<Self, Self::Error> {
         let user = Self {
-            username: r.user.username,
-            password: domain::UserPassword::from_clear_text(r.user.password)?,
-            email: r.user.email,
+            username: body.user.username,
+            password: domain::UserPassword::from_clear_text(body.user.password)?,
+            email: body.user.email,
         };
         Ok(user)
     }

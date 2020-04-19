@@ -5,6 +5,8 @@ use std::process::Command;
 use std::time::Duration;
 
 use fake::faker::internet::raw::*;
+use fake::faker::name::raw::*;
+use fake::faker::phone_number::raw::*;
 use fake::locales::EN;
 use fake::Fake;
 
@@ -76,7 +78,29 @@ async fn test_all() -> anyhow::Result<()> {
         .expect("");
     assert_eq!(res.status(), 200);
     let resp_body_string = res.body_string().await.ok();
-    assert_eq!(resp_body_string.expect("").contains(r#""token""#), true);
+    assert_eq!(
+        resp_body_string.clone().expect("").contains(r#""token""#),
+        true
+    );
+
+    let resp_body_json: serde_json::Value = serde_json::from_str(&resp_body_string.expect(""))?;
+    let token = resp_body_json["user"]["token"].as_str().expect("");
+
+    //
+    let req_body_json = serde_json::json!({
+        "user": {
+            "first_name": FirstName(EN).fake::<String>(),
+            "last_name": LastName(EN).fake::<String>(),
+            "phone": PhoneNumber(EN).fake::<String>()
+        }
+    });
+    let res = surf::patch(format!("{}/users/me", http_server_base_url))
+        .set_header("Authorization", token)
+        .body_json(&req_body_json)?
+        .await
+        .ok()
+        .expect("");
+    assert_eq!(res.status(), 204);
 
     //
     child.kill().expect("failed to kill process");

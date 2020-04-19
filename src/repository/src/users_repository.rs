@@ -10,7 +10,7 @@ impl domain::UserRepository for crate::Repository {
     ) -> Result<domain::User, domain::CreateUserError> {
         let status = domain::UserStatus::Active;
 
-        let new_user = db::NewUser {
+        let db_new_user = db::NewUser {
             username: &user.username,
             first_name: None,
             last_name: None,
@@ -26,11 +26,11 @@ impl domain::UserRepository for crate::Repository {
             .map_err(|e| to_domain_database_error(e))
             .await?;
 
-        let (user_id, _) = db::users::insert(&mut conn, &new_user)
+        let (user_id, _) = db::users::insert(&mut conn, &db_new_user)
             .map_err(|e| to_domain_database_error(e))
             .await?;
 
-        let W(user) = (new_user, user_id, status).into();
+        let W(user) = (db_new_user, user_id, status).into();
 
         Ok(user)
     }
@@ -58,6 +58,57 @@ impl domain::UserRepository for crate::Repository {
         }
 
         let W(user) = db_user.into();
+
+        Ok(user)
+    }
+
+    async fn get_user_by_id(
+        &self,
+        id: domain::UserID,
+    ) -> Result<domain::User, domain::GetUserByIDError> {
+        let mut conn = self
+            .postgres_connection
+            .conn()
+            .map_err(|e| to_domain_database_error(e))
+            .await?;
+
+        let db_user = db::users::find_by_id(&mut conn, id)
+            .map_err(|e| match e {
+                db::Error::RowNotFound => domain::GetUserByIDError::NotFound,
+                _ => to_domain_database_error(e).into(),
+            })
+            .await?;
+
+        let W(user) = db_user.into();
+
+        Ok(user)
+    }
+
+    async fn update_user(
+        &self,
+        mut user: domain::User,
+        user_profile: domain::UserProfile,
+    ) -> Result<domain::User, domain::DatabaseError> {
+        let db_update_user = db::UpdateUser {
+            username: &user.username,
+            first_name: user_profile.first_name.as_deref(),
+            last_name: user_profile.last_name.as_deref(),
+            phone: user_profile.phone.as_deref(),
+        };
+
+        let mut conn = self
+            .postgres_connection
+            .conn()
+            .map_err(|e| to_domain_database_error(e))
+            .await?;
+
+        let _ = db::users::update(&mut conn, user.id, &db_update_user)
+            .map_err(|e| to_domain_database_error(e))
+            .await?;
+
+        user.profile.first_name = db_update_user.first_name.map(|x| x.to_owned());
+        user.profile.last_name = db_update_user.last_name.map(|x| x.to_owned());
+        user.profile.phone = db_update_user.phone.map(|x| x.to_owned());
 
         Ok(user)
     }

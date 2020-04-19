@@ -23,3 +23,10 @@ pub struct User {
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
 }
+
+pub struct UpdateUser<'a> {
+    pub username: &'a str,
+    pub first_name: Option<&'a str>,
+    pub last_name: Option<&'a str>,
+    pub phone: Option<&'a str>,
+}

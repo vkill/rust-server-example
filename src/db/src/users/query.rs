@@ -53,3 +53,36 @@ pub async fn find_by_email(conn: &mut PgConnection, email: &str) -> crate::Resul
         .fetch_one(conn)
         .await
 }
+
+pub async fn find_by_id(conn: &mut PgConnection, id: i64) -> crate::Result<User> {
+    sqlx::query_as!(User, r#"SELECT * FROM users where id = $1"#, id)
+        .fetch_one(conn)
+        .await
+}
+
+pub async fn update(
+    conn: &mut PgConnection,
+    id: i64,
+    update_user: &UpdateUser<'_>,
+) -> crate::Result<bool> {
+    let n = sqlx::query!(
+        r#"
+UPDATE users 
+SET
+    username = $1,
+    first_name = $2,
+    last_name = $3,
+    phone = $4
+where id = $5
+"#,
+        update_user.username,
+        update_user.first_name,
+        update_user.last_name,
+        update_user.phone,
+        id,
+    )
+    .execute(conn)
+    .await?;
+
+    Ok(n == 1)
+}

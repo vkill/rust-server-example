@@ -1,4 +1,8 @@
-use super::{CreateUserError, GetUserByEmailAndPasswordError, User, UserForCreate};
+use super::{
+    CreateUserError, GetUserByEmailAndPasswordError, GetUserByIDError, User, UserForCreate, UserID,
+    UserProfile,
+};
+use crate::DatabaseError;
 use async_trait::async_trait;
 
 #[async_trait]
@@ -10,4 +14,12 @@ pub trait UserRepository {
         email: &str,
         password: &str,
     ) -> Result<User, GetUserByEmailAndPasswordError>;
+
+    async fn get_user_by_id(&self, id: UserID) -> Result<User, GetUserByIDError>;
+
+    async fn update_user(
+        &self,
+        user: User,
+        user_profile: UserProfile,
+    ) -> Result<User, DatabaseError>;
 }

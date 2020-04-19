@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct TokenClaims {
-    user_id: i64,
+    pub user_id: i64,
     #[serde(serialize_with = "to_ts", deserialize_with = "from_ts")]
     iat: DateTime<Utc>,
     #[serde(serialize_with = "to_ts", deserialize_with = "from_ts")]

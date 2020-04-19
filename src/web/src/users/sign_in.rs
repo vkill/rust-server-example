@@ -1,8 +1,7 @@
 use super::UserResponseBody;
 use crate::{encode_token, ResponseError, State};
-use repository::{domain, domain::UserRepository};
+use repository::domain::UserRepository;
 use serde::Deserialize;
-use std::convert::{TryFrom, TryInto};
 use tide::{http_types::StatusCode, Request, Response};
 
 pub async fn sign_in(mut req: Request<State>) -> Result<Response, ResponseError> {
@@ -33,6 +32,6 @@ struct SignInRequestBody {
 
 #[derive(Deserialize, Debug)]
 struct User {
-    pub email: String,
-    pub password: String,
+    email: String,
+    password: String,
 }

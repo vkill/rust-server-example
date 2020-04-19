@@ -61,6 +61,14 @@ impl From<jsonwebtoken::errors::Error> for ResponseError {
 //
 // domain
 //
+impl From<domain::DatabaseError> for ResponseError {
+    fn from(_: domain::DatabaseError) -> Self {
+        // TODO, set body
+        let resp = Response::new(StatusCode::InternalServerError);
+        Self::new(resp)
+    }
+}
+
 impl From<domain::UserPasswordError> for ResponseError {
     fn from(_: domain::UserPasswordError) -> Self {
         // TODO, set body
@@ -79,6 +87,14 @@ impl From<domain::CreateUserError> for ResponseError {
 
 impl From<domain::GetUserByEmailAndPasswordError> for ResponseError {
     fn from(_: domain::GetUserByEmailAndPasswordError) -> Self {
+        // TODO, set body
+        let resp = Response::new(StatusCode::InternalServerError);
+        Self::new(resp)
+    }
+}
+
+impl From<domain::GetUserByIDError> for ResponseError {
+    fn from(_: domain::GetUserByIDError) -> Self {
         // TODO, set body
         let resp = Response::new(StatusCode::InternalServerError);
         Self::new(resp)

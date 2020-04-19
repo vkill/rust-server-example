@@ -10,5 +10,8 @@ use response_error::ResponseError;
 mod token;
 use token::{decode_token, encode_token};
 
+mod request_ext;
+use request_ext::RequestExt;
+
 mod others;
 mod users;

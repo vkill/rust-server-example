@@ -13,3 +13,11 @@ pub enum GetUserByEmailAndPasswordError {
     #[error("Something went wrong.")]
     DatabaseError(#[from] crate::DatabaseError),
 }
+
+#[derive(thiserror::Error, Debug)]
+pub enum GetUserByIDError {
+    #[error("There is no user with the email and password you specified")]
+    NotFound,
+    #[error("Something went wrong.")]
+    DatabaseError(#[from] crate::DatabaseError),
+}
