@@ -1,14 +1,12 @@
 use crate::{to_domain_database_error, W};
 use async_trait::async_trait;
+use domain::*;
 use futures_util::future::TryFutureExt;
 
 #[async_trait]
-impl domain::UserRepository for crate::Repository {
-    async fn create_user(
-        &self,
-        user: domain::UserForCreate,
-    ) -> Result<domain::User, domain::CreateUserError> {
-        let status = domain::UserStatus::Active;
+impl UserRepository for crate::Repository {
+    async fn create_user(&self, user: UserForCreate) -> Result<User, CreateUserError> {
+        let status = UserStatus::Active;
 
         let db_new_user = db::NewUser {
             username: &user.username,
@@ -39,7 +37,7 @@ impl domain::UserRepository for crate::Repository {
         &self,
         email: &str,
         password: &str,
-    ) -> Result<domain::User, domain::GetUserByEmailAndPasswordError> {
+    ) -> Result<User, GetUserByEmailAndPasswordError> {
         let mut conn = self
             .postgres_connection
             .conn()
@@ -48,13 +46,13 @@ impl domain::UserRepository for crate::Repository {
 
         let db_user = db::users::find_by_email(&mut conn, email)
             .map_err(|e| match e {
-                db::Error::RowNotFound => domain::GetUserByEmailAndPasswordError::NotFound,
+                db::Error::RowNotFound => GetUserByEmailAndPasswordError::NotFound,
                 _ => to_domain_database_error(e).into(),
             })
             .await?;
 
-        if !domain::UserPassword::from_hash(db_user.clone().encrypted_password).verify(password)? {
-            return Err(domain::GetUserByEmailAndPasswordError::NotFound);
+        if !UserPassword::from_hash(db_user.clone().encrypted_password).verify(password)? {
+            return Err(GetUserByEmailAndPasswordError::NotFound);
         }
 
         let W(user) = db_user.into();
@@ -62,10 +60,7 @@ impl domain::UserRepository for crate::Repository {
         Ok(user)
     }
 
-    async fn get_user_by_id(
-        &self,
-        id: domain::UserID,
-    ) -> Result<domain::User, domain::GetUserByIDError> {
+    async fn get_user_by_id(&self, id: UserID) -> Result<User, GetUserByIDError> {
         let mut conn = self
             .postgres_connection
             .conn()
@@ -74,7 +69,7 @@ impl domain::UserRepository for crate::Repository {
 
         let db_user = db::users::find_by_id(&mut conn, id)
             .map_err(|e| match e {
-                db::Error::RowNotFound => domain::GetUserByIDError::NotFound,
+                db::Error::RowNotFound => GetUserByIDError::NotFound,
                 _ => to_domain_database_error(e).into(),
             })
             .await?;
@@ -86,9 +81,9 @@ impl domain::UserRepository for crate::Repository {
 
     async fn update_user(
         &self,
-        mut user: domain::User,
-        user_profile: domain::UserProfile,
-    ) -> Result<domain::User, domain::DatabaseError> {
+        mut user: User,
+        user_profile: UserProfile,
+    ) -> Result<User, DatabaseError> {
         let db_update_user = db::UpdateUser {
             username: &user.username,
             first_name: user_profile.first_name.as_deref(),
@@ -114,16 +109,16 @@ impl domain::UserRepository for crate::Repository {
     }
 }
 
-impl From<(db::NewUser<'_>, domain::UserID, domain::UserStatus)> for W<domain::User> {
-    fn from(t: (db::NewUser<'_>, domain::UserID, domain::UserStatus)) -> Self {
+impl From<(db::NewUser<'_>, UserID, UserStatus)> for W<User> {
+    fn from(t: (db::NewUser<'_>, UserID, UserStatus)) -> Self {
         let (new_user, user_id, status) = t;
 
-        let user = domain::User {
+        let user = User {
             id: user_id,
             username: new_user.username.into(),
             email: new_user.email.into(),
             status: status,
-            profile: domain::UserProfile {
+            profile: UserProfile {
                 first_name: new_user.first_name.map(|x| x.into()),
                 last_name: new_user.last_name.map(|x| x.into()),
                 phone: new_user.phone.map(|x| x.into()),
@@ -134,14 +129,14 @@ impl From<(db::NewUser<'_>, domain::UserID, domain::UserStatus)> for W<domain::U
     }
 }
 
-impl From<db::User> for W<domain::User> {
+impl From<db::User> for W<User> {
     fn from(db_user: db::User) -> Self {
-        let user = domain::User {
+        let user = User {
             id: db_user.id,
             username: db_user.username,
             email: db_user.email,
-            status: domain::UserStatus::Active, // TODO
-            profile: domain::UserProfile {
+            status: UserStatus::Active, // TODO
+            profile: UserProfile {
                 first_name: db_user.first_name.map(|x| x.into()),
                 last_name: db_user.last_name.map(|x| x.into()),
                 phone: db_user.phone.map(|x| x.into()),
