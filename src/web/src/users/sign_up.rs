@@ -1,12 +1,12 @@
 use super::UserResponseBody;
-use crate::{encode_token, ResponseError, State};
+use crate::{encode_token, State};
 use repository::{domain, domain::UserRepository};
 use serde::Deserialize;
 use std::convert::{TryFrom, TryInto};
 use tide::{http_types::StatusCode, Request, Response};
 use validator::Validate;
 
-pub async fn sign_up(mut req: Request<State>) -> Result<Response, ResponseError> {
+pub async fn sign_up(mut req: Request<State>) -> crate::Result<Response> {
     let req_body: SignUpRequestBody = req
         .body_json()
         .await

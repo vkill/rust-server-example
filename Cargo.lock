@@ -2470,6 +2470,7 @@ dependencies = [
  "serde 1.0.106",
  "serde_json",
  "surf 2.0.0-alpha.1",
+ "thiserror",
  "tide",
  "validator",
  "validator_derive",

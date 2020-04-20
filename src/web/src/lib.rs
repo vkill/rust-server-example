@@ -7,14 +7,13 @@ pub use http_server::get_app as get_http_server;
 mod state;
 use state::State;
 
-mod response_error;
-use response_error::ResponseError;
+type Result<T> = std::result::Result<T, tide::http_types::Error>;
 
 mod token;
 use token::{decode_token, encode_token};
 
 mod request_ext;
-use request_ext::RequestExt;
+use request_ext::*;
 
 mod others;
 mod users;

@@ -19,6 +19,7 @@ jsonwebtoken = "7.1.0"
 chrono = { version = "0.4.11", features = ["serde"] }
 validator = "0.10.0"
 validator_derive = "0.10.0"
+thiserror = "1.0.15"
 
 [dev-dependencies]
 anyhow = "1.0.28"

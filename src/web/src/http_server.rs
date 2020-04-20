@@ -1,6 +1,6 @@
 use crate::State;
 use repository::Repository;
-use tide::{IntoResponse, Response, Server};
+use tide::{http_types::StatusCode, IntoResponse, Response, Server};
 
 pub fn get_app(repository: Repository, jwt_hs_secret: String) -> Server<State> {
     let state = State {
@@ -29,11 +29,17 @@ fn add_routes(app: &mut Server<State>) {
 }
 
 //
-fn result_to_response<T: IntoResponse, E: IntoResponse>(r: Result<T, E>) -> Response {
+fn result_to_response<T: IntoResponse>(r: crate::Result<T>) -> Response {
     match r {
         Ok(ir) => ir.into_response(),
-        Err(ir) => {
-            let resp = ir.into_response();
+        Err(mut ht_e) => {
+            if let Some(_) = ht_e.downcast_ref::<validator::ValidationErrors>() {
+                ht_e.set_status(StatusCode::BadRequest);
+            }
+
+            // TODO domain::RepositoryError::LogicError
+
+            let resp = ht_e.into_response();
             if resp.status().is_success() {
                 panic!(
                     "Attempted to yield error response with success code {:?}",

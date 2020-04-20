@@ -1,9 +1,9 @@
-use crate::{RequestExt, ResponseError, State};
+use crate::{RequestAuthenticationExt, State};
 use repository::{domain, domain::UserRepository};
 use serde::Deserialize;
 use tide::{http_types::StatusCode, Request, Response};
 
-pub async fn update_profile(mut req: Request<State>) -> Result<Response, ResponseError> {
+pub async fn update_profile(mut req: Request<State>) -> crate::Result<Response> {
     let user_id = req.require_authentication()?;
 
     let req_body: UpdateProfileRequestBody = req
