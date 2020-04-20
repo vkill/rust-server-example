@@ -1,3 +1,6 @@
+#[macro_use]
+extern crate validator_derive;
+
 mod http_server;
 pub use http_server::get_app as get_http_server;
 

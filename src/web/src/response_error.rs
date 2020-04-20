@@ -58,6 +58,13 @@ impl From<jsonwebtoken::errors::Error> for ResponseError {
     }
 }
 
+impl From<validator::ValidationErrors> for ResponseError {
+    fn from(e: validator::ValidationErrors) -> Self {
+        let resp = Response::new(StatusCode::BadRequest).body_string(e.to_string());
+        Self::new(resp)
+    }
+}
+
 //
 impl From<domain::UserPasswordError> for ResponseError {
     fn from(_: domain::UserPasswordError) -> Self {

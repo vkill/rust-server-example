@@ -3,12 +3,15 @@ use crate::{encode_token, ResponseError, State};
 use repository::domain::UserRepository;
 use serde::Deserialize;
 use tide::{http_types::StatusCode, Request, Response};
+use validator::Validate;
 
 pub async fn sign_in(mut req: Request<State>) -> Result<Response, ResponseError> {
     let req_body: SignInRequestBody = req
         .body_json()
         .await
         .map_err(|e| Response::new(StatusCode::BadRequest).body_string(e.to_string()))?;
+
+    let _ = req_body.user.validate()?;
 
     let repository = &req.state().repository;
 
@@ -30,8 +33,10 @@ struct SignInRequestBody {
     user: User,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Validate, Debug)]
 struct User {
+    #[validate(email)]
     email: String,
+    #[validate(length(min = 1))]
     password: String,
 }

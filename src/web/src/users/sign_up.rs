@@ -4,12 +4,15 @@ use repository::{domain, domain::UserRepository};
 use serde::Deserialize;
 use std::convert::{TryFrom, TryInto};
 use tide::{http_types::StatusCode, Request, Response};
+use validator::Validate;
 
 pub async fn sign_up(mut req: Request<State>) -> Result<Response, ResponseError> {
     let req_body: SignUpRequestBody = req
         .body_json()
         .await
         .map_err(|e| Response::new(StatusCode::BadRequest).body_string(e.to_string()))?;
+
+    let _ = req_body.user.validate()?;
 
     let user: domain::UserForCreate = req_body.try_into()?;
 
@@ -31,10 +34,13 @@ struct SignUpRequestBody {
     user: User,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Validate, Debug)]
 struct User {
+    #[validate(length(min = 4, max = 32))]
     username: String,
+    #[validate(email)]
     email: String,
+    #[validate(length(min = 8, max = 32))]
     password: String,
 }
 
