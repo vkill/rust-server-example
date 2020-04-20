@@ -27,33 +27,28 @@ impl From<tide::Response> for ResponseError {
 }
 
 impl From<Box<dyn std::error::Error + Send + Sync>> for ResponseError {
-    fn from(_: Box<dyn std::error::Error + Send + Sync>) -> Self {
-        // TODO, set body
-        let resp = Response::new(StatusCode::InternalServerError);
+    fn from(e: Box<dyn std::error::Error + Send + Sync>) -> Self {
+        let resp = Response::new(StatusCode::InternalServerError).body_string(e.to_string());
         Self { resp }
     }
 }
 
 impl From<http_types::Error> for ResponseError {
-    fn from(_: http_types::Error) -> Self {
-        // TODO, set body
-        let resp = Response::new(StatusCode::InternalServerError);
-        Self { resp }
+    fn from(e: http_types::Error) -> Self {
+        unimplemented!()
     }
 }
 
 impl From<serde_json::error::Error> for ResponseError {
-    fn from(_: serde_json::error::Error) -> Self {
-        // TODO, set body
-        let resp = Response::new(StatusCode::InternalServerError);
+    fn from(e: serde_json::error::Error) -> Self {
+        let resp = Response::new(StatusCode::InternalServerError).body_string(e.to_string());
         Self { resp }
     }
 }
 
 impl From<jsonwebtoken::errors::Error> for ResponseError {
-    fn from(_: jsonwebtoken::errors::Error) -> Self {
-        // TODO, set body
-        let resp = Response::new(StatusCode::InternalServerError);
+    fn from(e: jsonwebtoken::errors::Error) -> Self {
+        let resp = Response::new(StatusCode::InternalServerError).body_string(e.to_string());
         Self::new(resp)
     }
 }
@@ -67,9 +62,8 @@ impl From<validator::ValidationErrors> for ResponseError {
 
 //
 impl From<domain::UserPasswordError> for ResponseError {
-    fn from(_: domain::UserPasswordError) -> Self {
-        // TODO, set body
-        let resp = Response::new(StatusCode::InternalServerError);
+    fn from(e: domain::UserPasswordError) -> Self {
+        let resp = Response::new(StatusCode::InternalServerError).body_string(e.to_string());
         Self::new(resp)
     }
 }
@@ -79,9 +73,14 @@ impl<E> From<domain::RepositoryError<E>> for ResponseError
 where
     E: domain::RepositoryLogicError,
 {
-    fn from(_: domain::RepositoryError<E>) -> Self {
-        // TODO, set body
-        let resp = Response::new(StatusCode::InternalServerError);
-        Self::new(resp)
+    fn from(e: domain::RepositoryError<E>) -> Self {
+        match e {
+            domain::RepositoryError::DBError(e) => {
+                let resp =
+                    Response::new(StatusCode::InternalServerError).body_string(e.to_string());
+                Self::new(resp)
+            }
+            domain::RepositoryError::LogicError(e) => unimplemented!(),
+        }
     }
 }
