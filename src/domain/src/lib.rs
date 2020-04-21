@@ -1,3 +1,6 @@
+#[macro_use]
+extern crate validator_derive;
+
 mod errors;
 pub use errors::*;
 

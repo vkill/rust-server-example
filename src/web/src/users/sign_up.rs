@@ -2,7 +2,6 @@ use super::UserResponseBody;
 use crate::{encode_token, State};
 use repository::{domain, domain::UserRepository};
 use serde::Deserialize;
-use std::convert::{TryFrom, TryInto};
 use tide::{http_types::StatusCode, Request, Response};
 use validator::Validate;
 
@@ -12,9 +11,9 @@ pub async fn sign_up(mut req: Request<State>) -> crate::Result<Response> {
         .await
         .map_err(|e| Response::new(StatusCode::BadRequest).body_string(e.to_string()))?;
 
-    let _ = req_body.user.validate()?;
+    let user: domain::CreateUserInput = req_body.into();
 
-    let user: domain::UserForCreate = req_body.try_into()?;
+    let _ = user.validate()?;
 
     let repository = &req.state().repository;
 
@@ -34,25 +33,19 @@ struct SignUpRequestBody {
     user: User,
 }
 
-#[derive(Deserialize, Validate, Debug)]
+#[derive(Deserialize, Debug)]
 struct User {
-    #[validate(length(min = 4, max = 32))]
     username: String,
-    #[validate(email)]
     email: String,
-    #[validate(length(min = 8, max = 32))]
     password: String,
 }
 
-impl TryFrom<SignUpRequestBody> for domain::UserForCreate {
-    type Error = domain::UserPasswordError;
-
-    fn try_from(body: SignUpRequestBody) -> Result<Self, Self::Error> {
-        let user = Self {
+impl From<SignUpRequestBody> for domain::CreateUserInput {
+    fn from(body: SignUpRequestBody) -> Self {
+        Self {
             username: body.user.username,
-            password: domain::UserPassword::from_clear_text(body.user.password)?,
+            password: body.user.password,
             email: body.user.email,
-        };
-        Ok(user)
+        }
     }
 }

@@ -7,16 +7,19 @@ use futures_util::future::TryFutureExt;
 impl UserRepository for crate::Repository {
     async fn create_user(
         &self,
-        user: UserForCreate,
-    ) -> domain::RepositoryResult<User, RepositoryNoneLogicError> {
+        user: CreateUserInput,
+    ) -> domain::RepositoryResult<User, CreateUserError> {
         let status = UserStatus::Active;
+
+        let user_password =
+            UserPassword::from_clear_text(user.password).map_err(|e| CreateUserError::from(e))?;
 
         let db_new_user = db::NewUser {
             username: &user.username,
             first_name: None,
             last_name: None,
             email: &user.email,
-            encrypted_password: &user.password.hash(),
+            encrypted_password: user_password.hash(),
             phone: None,
             status: status.to_owned().into(),
         };

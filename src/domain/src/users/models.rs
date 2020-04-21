@@ -1,10 +1,14 @@
-use crate::UserPassword;
 use crate::UserStatus;
+use validator::Validate;
 
-pub struct UserForCreate {
+#[derive(Validate, Debug)]
+pub struct CreateUserInput {
+    #[validate(length(min = 4, max = 32))]
     pub username: String,
+    #[validate(email)]
     pub email: String,
-    pub password: UserPassword,
+    #[validate(length(min = 8, max = 32))]
+    pub password: String,
 }
 
 pub struct UserProfile {

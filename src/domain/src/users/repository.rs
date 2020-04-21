@@ -6,8 +6,8 @@ use async_trait::async_trait;
 pub trait UserRepository {
     async fn create_user(
         &self,
-        user: UserForCreate,
-    ) -> crate::RepositoryResult<User, RepositoryNoneLogicError>;
+        user: CreateUserInput,
+    ) -> crate::RepositoryResult<User, CreateUserError>;
 
     async fn get_user_by_email_and_password(
         &self,

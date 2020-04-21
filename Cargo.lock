@@ -580,6 +580,8 @@ dependencies = [
  "bcrypt",
  "num_enum",
  "thiserror",
+ "validator",
+ "validator_derive",
 ]
 
 [[package]]
