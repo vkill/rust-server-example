@@ -15,6 +15,8 @@ pub enum GetUserByEmailAndPasswordError {
     NotFound,
     #[error("Failed to process password")]
     PasswordError(#[from] crate::UserPasswordError),
+    #[error("Failed to process status")]
+    StatusError(#[from] crate::UserStatusError),
 }
 impl RepositoryLogicError for GetUserByEmailAndPasswordError {}
 
@@ -22,5 +24,7 @@ impl RepositoryLogicError for GetUserByEmailAndPasswordError {}
 pub enum GetUserByIDError {
     #[error("There is no user with the email and password you specified")]
     NotFound,
+    #[error("Failed to process status")]
+    StatusError(#[from] crate::UserStatusError),
 }
 impl RepositoryLogicError for GetUserByIDError {}

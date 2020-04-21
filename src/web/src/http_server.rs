@@ -37,8 +37,6 @@ fn result_to_response<T: IntoResponse>(r: crate::Result<T>) -> Response {
                 ht_e.set_status(StatusCode::BadRequest);
             }
 
-            // TODO domain::RepositoryError::LogicError
-
             let resp = ht_e.into_response();
             if resp.status().is_success() {
                 panic!(

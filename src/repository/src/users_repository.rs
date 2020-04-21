@@ -2,6 +2,7 @@ use crate::{to_domain_repository_error, W};
 use async_trait::async_trait;
 use domain::*;
 use futures_util::future::TryFutureExt;
+use std::convert::{TryFrom, TryInto};
 
 #[async_trait]
 impl UserRepository for crate::Repository {
@@ -81,7 +82,9 @@ impl UserRepository for crate::Repository {
             return Err(GetUserByEmailAndPasswordError::NotFound.into());
         }
 
-        let W(user) = db_user.into();
+        let W(user) = db_user
+            .try_into()
+            .map_err(|e| GetUserByEmailAndPasswordError::from(e))?;
 
         Ok(user)
     }
@@ -100,7 +103,7 @@ impl UserRepository for crate::Repository {
             })
             .await?;
 
-        let W(user) = db_user.into();
+        let W(user) = db_user.try_into().map_err(|e| GetUserByIDError::from(e))?;
 
         Ok(user)
     }
@@ -155,13 +158,17 @@ impl From<(db::NewUser<'_>, UserID, UserStatus)> for W<User> {
     }
 }
 
-impl From<db::User> for W<User> {
-    fn from(db_user: db::User) -> Self {
+impl TryFrom<db::User> for W<User> {
+    type Error = domain::UserStatusError;
+
+    fn try_from(db_user: db::User) -> Result<Self, domain::UserStatusError> {
+        let status = UserStatus::from_int(db_user.status)?;
+
         let user = User {
             id: db_user.id,
             username: db_user.username,
             email: db_user.email,
-            status: UserStatus::Active, // TODO
+            status: status,
             profile: UserProfile {
                 first_name: db_user.first_name.map(|x| x.into()),
                 last_name: db_user.last_name.map(|x| x.into()),
@@ -169,6 +176,6 @@ impl From<db::User> for W<User> {
             },
         };
 
-        W(user)
+        Ok(W(user))
     }
 }
