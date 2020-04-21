@@ -2,7 +2,7 @@ use super::UserResponseBody;
 use crate::{encode_token, State};
 use repository::{domain, domain::UserRepository};
 use serde::Deserialize;
-use tide::{http_types::StatusCode, Request, Response};
+use tide::{http_types, http_types::StatusCode, Request, Response};
 use validator::Validate;
 
 pub async fn sign_up(mut req: Request<State>) -> crate::Result<Response> {
@@ -17,7 +17,16 @@ pub async fn sign_up(mut req: Request<State>) -> crate::Result<Response> {
 
     let repository = &req.state().repository;
 
-    let user = repository.create_user(user).await?;
+    let user = repository.create_user(user).await.map_err(|e| match e {
+        domain::RepositoryError::LogicError::<domain::CreateUserError>(logic_e) => {
+            if let domain::CreateUserError::EmailExists = logic_e {
+                http_types::Error::new(StatusCode::BadRequest, logic_e)
+            } else {
+                logic_e.into()
+            }
+        }
+        _ => e.into(),
+    })?;
 
     let token = encode_token(user.id, &req.state().jwt_hs_secret)?;
 

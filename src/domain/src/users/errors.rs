@@ -2,6 +2,8 @@ use crate::RepositoryLogicError;
 
 #[derive(thiserror::Error, Debug)]
 pub enum CreateUserError {
+    #[error("This email is exists")]
+    EmailExists,
     #[error("Failed to process password")]
     PasswordError(#[from] crate::UserPasswordError),
 }

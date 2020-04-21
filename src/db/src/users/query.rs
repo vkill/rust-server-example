@@ -2,6 +2,21 @@ use super::mapper::*;
 use chrono::{NaiveDateTime, Utc};
 use sqlx::PgConnection;
 
+pub async fn exists_with_email(conn: &mut PgConnection, email: &str) -> crate::Result<bool> {
+    struct Returning {
+        count: i64,
+    }
+
+    sqlx::query_as!(
+        Returning,
+        r#"SELECT count(*) FROM users where email = $1"#,
+        email
+    )
+    .fetch_one(conn)
+    .await
+    .map(|c| c.count > 0)
+}
+
 pub async fn insert(
     conn: &mut PgConnection,
     new_user: &NewUser<'_>,

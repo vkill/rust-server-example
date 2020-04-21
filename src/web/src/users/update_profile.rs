@@ -1,7 +1,7 @@
 use crate::{RequestAuthenticationExt, State};
 use repository::{domain, domain::UserRepository};
 use serde::Deserialize;
-use tide::{http_types::StatusCode, Request, Response};
+use tide::{http_types, http_types::StatusCode, Request, Response};
 
 pub async fn update_profile(mut req: Request<State>) -> crate::Result<Response> {
     let user_id = req.require_authentication()?;
@@ -14,7 +14,15 @@ pub async fn update_profile(mut req: Request<State>) -> crate::Result<Response> 
 
     let repository = &req.state().repository;
 
-    let user = repository.get_user_by_id(user_id).await?;
+    let user = repository
+        .get_user_by_id(user_id)
+        .await
+        .map_err(|e| match e {
+            domain::RepositoryError::LogicError::<domain::GetUserByIDError>(logic_e) => {
+                http_types::Error::new(StatusCode::Forbidden, logic_e)
+            }
+            _ => e.into(),
+        })?;
 
     let _ = repository.update_user(user, user_profile).await?;
 

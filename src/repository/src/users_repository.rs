@@ -30,8 +30,25 @@ impl UserRepository for crate::Repository {
             .map_err(|e| to_domain_repository_error(e))
             .await?;
 
-        let (user_id, _) = db::users::insert(&mut conn, &db_new_user)
+        if db::users::exists_with_email(&mut conn, &db_new_user.email)
             .map_err(|e| to_domain_repository_error(e))
+            .await?
+        {
+            return Err(CreateUserError::EmailExists.into());
+        }
+
+        let (user_id, _) = db::users::insert(&mut conn, &db_new_user)
+            .map_err(|e| {
+                if let db::Error::Database(db_e) = &e {
+                    if db_e.code() == Some("23505") {
+                        CreateUserError::EmailExists.into()
+                    } else {
+                        to_domain_repository_error(e)
+                    }
+                } else {
+                    to_domain_repository_error(e)
+                }
+            })
             .await?;
 
         let W(user) = (db_new_user, user_id, status).into();
