@@ -1,4 +1,4 @@
-use crate::{to_domain_repository_error, W};
+use crate::{to_domain_database_error, W};
 use async_trait::async_trait;
 use domain::*;
 use futures_util::future::TryFutureExt;
@@ -6,10 +6,7 @@ use std::convert::{TryFrom, TryInto};
 
 #[async_trait]
 impl UserRepository for crate::Repository {
-    async fn create_user(
-        &self,
-        user: CreateUserInput,
-    ) -> domain::RepositoryResult<User, CreateUserError> {
+    async fn create_user(&self, user: CreateUserInput) -> Result<User, domain::CreateUserError> {
         let status = UserStatus::Active;
 
         let user_password =
@@ -28,26 +25,26 @@ impl UserRepository for crate::Repository {
         let mut conn = self
             .postgres_connection
             .conn()
-            .map_err(|e| to_domain_repository_error(e))
+            .map_err(|e| to_domain_database_error(e))
             .await?;
 
         if db::users::exists_with_email(&mut conn, &db_new_user.email)
-            .map_err(|e| to_domain_repository_error(e))
+            .map_err(|e| to_domain_database_error(e))
             .await?
         {
-            return Err(CreateUserError::EmailExists.into());
+            return Err(CreateUserError::EmailExists);
         }
 
         let (user_id, _) = db::users::insert(&mut conn, &db_new_user)
             .map_err(|e| {
                 if let db::Error::Database(db_e) = &e {
                     if db_e.code() == Some("23505") {
-                        CreateUserError::EmailExists.into()
+                        CreateUserError::EmailExists
                     } else {
-                        to_domain_repository_error(e)
+                        to_domain_database_error(e).into()
                     }
                 } else {
-                    to_domain_repository_error(e)
+                    to_domain_database_error(e).into()
                 }
             })
             .await?;
@@ -61,17 +58,17 @@ impl UserRepository for crate::Repository {
         &self,
         email: &str,
         password: &str,
-    ) -> domain::RepositoryResult<User, GetUserByEmailAndPasswordError> {
+    ) -> Result<User, domain::GetUserByEmailAndPasswordError> {
         let mut conn = self
             .postgres_connection
             .conn()
-            .map_err(|e| to_domain_repository_error(e))
+            .map_err(|e| to_domain_database_error(e))
             .await?;
 
         let db_user = db::users::find_by_email(&mut conn, email)
             .map_err(|e| match e {
-                db::Error::RowNotFound => GetUserByEmailAndPasswordError::NotFound.into(),
-                _ => to_domain_repository_error(e),
+                db::Error::RowNotFound => GetUserByEmailAndPasswordError::NotFound,
+                _ => to_domain_database_error(e).into(),
             })
             .await?;
 
@@ -79,7 +76,7 @@ impl UserRepository for crate::Repository {
             .verify(password)
             .map_err(|e| GetUserByEmailAndPasswordError::from(e))?
         {
-            return Err(GetUserByEmailAndPasswordError::NotFound.into());
+            return Err(GetUserByEmailAndPasswordError::NotFound);
         }
 
         let W(user) = db_user
@@ -89,17 +86,17 @@ impl UserRepository for crate::Repository {
         Ok(user)
     }
 
-    async fn get_user_by_id(&self, id: UserID) -> domain::RepositoryResult<User, GetUserByIDError> {
+    async fn get_user_by_id(&self, id: UserID) -> Result<User, domain::GetUserByIDError> {
         let mut conn = self
             .postgres_connection
             .conn()
-            .map_err(|e| to_domain_repository_error(e))
+            .map_err(|e| to_domain_database_error(e))
             .await?;
 
         let db_user = db::users::find_by_id(&mut conn, id)
             .map_err(|e| match e {
-                db::Error::RowNotFound => GetUserByIDError::NotFound.into(),
-                _ => to_domain_repository_error(e),
+                db::Error::RowNotFound => GetUserByIDError::NotFound,
+                _ => to_domain_database_error(e).into(),
             })
             .await?;
 
@@ -112,7 +109,7 @@ impl UserRepository for crate::Repository {
         &self,
         mut user: User,
         user_profile: UserProfile,
-    ) -> domain::RepositoryResult<User, RepositoryNoneLogicError> {
+    ) -> Result<User, domain::UpdateUserError> {
         let db_update_user = db::UpdateUser {
             username: &user.username,
             first_name: user_profile.first_name.as_deref(),
@@ -123,11 +120,11 @@ impl UserRepository for crate::Repository {
         let mut conn = self
             .postgres_connection
             .conn()
-            .map_err(|e| to_domain_repository_error(e))
+            .map_err(|e| to_domain_database_error(e))
             .await?;
 
         let _ = db::users::update(&mut conn, user.id, &db_update_user)
-            .map_err(|e| to_domain_repository_error(e))
+            .map_err(|e| to_domain_database_error(e))
             .await?;
 
         user.profile.first_name = db_update_user.first_name.map(|x| x.to_owned());

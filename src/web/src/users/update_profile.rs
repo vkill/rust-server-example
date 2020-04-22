@@ -18,9 +18,7 @@ pub async fn update_profile(mut req: Request<State>) -> crate::Result<Response> 
         .get_user_by_id(user_id)
         .await
         .map_err(|e| match e {
-            domain::RepositoryError::LogicError::<domain::GetUserByIDError>(logic_e) => {
-                http_types::Error::new(StatusCode::Forbidden, logic_e)
-            }
+            domain::GetUserByIDError::NotFound => http_types::Error::new(StatusCode::Forbidden, e),
             _ => e.into(),
         })?;
 

@@ -19,14 +19,8 @@ pub async fn sign_in(mut req: Request<State>) -> crate::Result<Response> {
         .get_user_by_email_and_password(&req_body.user.email, &req_body.user.password)
         .await
         .map_err(|e| match e {
-            domain::RepositoryError::LogicError::<domain::GetUserByEmailAndPasswordError>(
-                logic_e,
-            ) => {
-                if let domain::GetUserByEmailAndPasswordError::NotFound = logic_e {
-                    http_types::Error::new(StatusCode::NotFound, logic_e)
-                } else {
-                    logic_e.into()
-                }
+            domain::GetUserByEmailAndPasswordError::NotFound => {
+                http_types::Error::new(StatusCode::NotFound, e)
             }
             _ => e.into(),
         })?;

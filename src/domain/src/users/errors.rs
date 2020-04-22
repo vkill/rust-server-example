@@ -1,4 +1,4 @@
-use crate::RepositoryLogicError;
+use crate::DatabaseError;
 
 #[derive(thiserror::Error, Debug)]
 pub enum CreateUserError {
@@ -6,8 +6,9 @@ pub enum CreateUserError {
     EmailExists,
     #[error("Failed to process password")]
     PasswordError(#[from] crate::UserPasswordError),
+    #[error("Something went wrong.")]
+    DatabaseError(#[from] DatabaseError),
 }
-impl RepositoryLogicError for CreateUserError {}
 
 #[derive(thiserror::Error, Debug)]
 pub enum GetUserByEmailAndPasswordError {
@@ -17,8 +18,9 @@ pub enum GetUserByEmailAndPasswordError {
     PasswordError(#[from] crate::UserPasswordError),
     #[error("Failed to process status")]
     StatusError(#[from] crate::UserStatusError),
+    #[error("Something went wrong.")]
+    DatabaseError(#[from] DatabaseError),
 }
-impl RepositoryLogicError for GetUserByEmailAndPasswordError {}
 
 #[derive(thiserror::Error, Debug)]
 pub enum GetUserByIDError {
@@ -26,5 +28,12 @@ pub enum GetUserByIDError {
     NotFound,
     #[error("Failed to process status")]
     StatusError(#[from] crate::UserStatusError),
+    #[error("Something went wrong.")]
+    DatabaseError(#[from] DatabaseError),
 }
-impl RepositoryLogicError for GetUserByIDError {}
+
+#[derive(thiserror::Error, Debug)]
+pub enum UpdateUserError {
+    #[error("Something went wrong.")]
+    DatabaseError(#[from] DatabaseError),
+}
