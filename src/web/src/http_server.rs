@@ -1,12 +1,7 @@
 use crate::State;
-use repository::Repository;
 use tide::{http_types::StatusCode, IntoResponse, Response, Server};
 
-pub fn get_app(repository: Repository, jwt_hs_secret: String) -> Server<State> {
-    let state = State {
-        repository,
-        jwt_hs_secret,
-    };
+pub fn get_app(state: State) -> Server<State> {
     let mut app = Server::with_state(state);
     add_routes(&mut app);
     app
@@ -26,6 +21,12 @@ fn add_routes(app: &mut Server<State>) {
 
     app.at("/users/me")
         .patch(|req| async move { result_to_response(crate::users::update_profile(req).await) });
+
+    app.at("/graphql")
+        .get(|req| async move { crate::graphql::graphql_playground(req).await })
+        .post(|req| async move { result_to_response(crate::graphql::graphql_post(req).await) })
+        .at("/graphiql")
+        .get(|req| async move { crate::graphql::graphql_graphiql(req).await });
 }
 
 //

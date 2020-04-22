@@ -29,7 +29,9 @@ async fn run_http_server(addr: String) -> anyhow::Result<()> {
 
     let jwt_hs_secret = dotenv::var("JWT_HS_SECRET").ok().expect("");
 
-    let http_server = web::get_http_server(repository, jwt_hs_secret);
+    let state = web::State::new(repository, jwt_hs_secret);
+
+    let http_server = web::get_http_server(state);
     http_server.listen(addr).await?;
 
     Ok(())

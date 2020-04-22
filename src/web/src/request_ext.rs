@@ -17,21 +17,18 @@ enum RequestAuthenticationExtError {
 
 impl RequestAuthenticationExt for Request<State> {
     fn require_authentication(&self) -> Result<i64, http_types::Error> {
-        let values = self.header(&"Authorization".parse()?).ok_or_else(|| {
-            http_types::Error::new(
-                StatusCode::Unauthorized,
-                RequestAuthenticationExtError::TokenMissing,
-            )
-        })?;
+        let token = self
+            .header(&"Authorization".parse().unwrap())
+            .map(|values| values.first().map(|value| value.as_str().to_string()))
+            .unwrap_or(Some("".to_string()))
+            .ok_or_else(|| {
+                http_types::Error::new(
+                    StatusCode::Unauthorized,
+                    RequestAuthenticationExtError::TokenMissing,
+                )
+            })?;
 
-        let value = values.first().ok_or_else(|| {
-            http_types::Error::new(
-                StatusCode::Unauthorized,
-                RequestAuthenticationExtError::TokenMissing,
-            )
-        })?;
-
-        let token_claims = decode_token(value.as_str(), &self.state().jwt_hs_secret)?;
+        let token_claims = decode_token(&token, &self.state().jwt_hs_secret)?;
 
         let user_id = token_claims.user_id;
 

@@ -105,6 +105,43 @@ async fn test_all() -> anyhow::Result<()> {
         .expect("");
     assert_eq!(res.status(), 204);
 
+    // graphql
+    let req_body_json = serde_json::json!({
+        "query": "{currentUserId}",
+        "variables": null
+    });
+    let mut res = surf::post(format!("{}/graphql", http_server_base_url))
+        .body_json(&req_body_json)?
+        .await
+        .ok()
+        .expect("");
+    println!("{:?}", res);
+    assert_eq!(res.status(), 200);
+    let resp_body_string = res.body_string().await.ok();
+    println!("{:?}", resp_body_string);
+    let resp_body_json: serde_json::Value = serde_json::from_str(&resp_body_string.expect(""))?;
+    let user_id = resp_body_json["data"]["currentUserId"].as_str();
+    assert_eq!(user_id, None);
+
+    // graphql
+    let req_body_json = serde_json::json!({
+        "query": "{currentUserId}",
+        "variables": null
+    });
+    let mut res = surf::post(format!("{}/graphql", http_server_base_url))
+        .set_header("Authorization", token)
+        .body_json(&req_body_json)?
+        .await
+        .ok()
+        .expect("");
+    println!("{:?}", res);
+    assert_eq!(res.status(), 200);
+    let resp_body_string = res.body_string().await.ok();
+    println!("{:?}", resp_body_string);
+    let resp_body_json: serde_json::Value = serde_json::from_str(&resp_body_string.expect(""))?;
+    let user_id = resp_body_json["data"]["currentUserId"].as_str();
+    assert_ne!(user_id, None);
+
     //
     child.kill().expect("failed to kill process");
 
