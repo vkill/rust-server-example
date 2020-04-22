@@ -1,5 +1,5 @@
 use crate::State;
-use tide::{http_types::StatusCode, IntoResponse, Response, Server};
+use tide::{http_types, IntoResponse, Response, Server};
 
 pub fn get_app(state: State) -> Server<State> {
     let mut app = Server::with_state(state);
@@ -8,6 +8,7 @@ pub fn get_app(state: State) -> Server<State> {
 }
 
 fn add_routes(app: &mut Server<State>) {
+    app.at("/").get(|_| async move { "It Works!" });
     app.at("/hello").get(|_| async move { "Hello, world!" });
 
     app.at("/server_ip")
@@ -35,7 +36,7 @@ fn result_to_response<T: IntoResponse>(r: crate::Result<T>) -> Response {
         Ok(ir) => ir.into_response(),
         Err(mut ht_e) => {
             if let Some(_) = ht_e.downcast_ref::<validator::ValidationErrors>() {
-                ht_e.set_status(StatusCode::BadRequest);
+                ht_e.set_status(http_types::StatusCode::BadRequest);
             }
 
             let resp = ht_e.into_response();

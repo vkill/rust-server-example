@@ -1,5 +1,5 @@
 use crate::{decode_token, State};
-use tide::{http_types, http_types::StatusCode, Request};
+use tide::{http_types, Request};
 
 //
 
@@ -23,7 +23,7 @@ impl RequestAuthenticationExt for Request<State> {
             .unwrap_or(Some("".to_string()))
             .ok_or_else(|| {
                 http_types::Error::new(
-                    StatusCode::Unauthorized,
+                    http_types::StatusCode::Unauthorized,
                     RequestAuthenticationExtError::TokenMissing,
                 )
             })?;

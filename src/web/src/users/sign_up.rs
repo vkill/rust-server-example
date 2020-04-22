@@ -2,14 +2,13 @@ use super::UserResponseBody;
 use crate::{encode_token, State};
 use repository::{domain, domain::UserRepository};
 use serde::Deserialize;
-use tide::{http_types, http_types::StatusCode, Request, Response};
+use tide::{http_types, Request, Response};
 use validator::Validate;
 
 pub async fn sign_up(mut req: Request<State>) -> crate::Result<Response> {
-    let req_body: SignUpRequestBody = req
-        .body_json()
-        .await
-        .map_err(|e| Response::new(StatusCode::BadRequest).body_string(e.to_string()))?;
+    let req_body: SignUpRequestBody = req.body_json().await.map_err(|e| {
+        Response::new(http_types::StatusCode::BadRequest).body_string(e.to_string())
+    })?;
 
     let user: domain::CreateUserInput = req_body.into();
 
@@ -18,7 +17,9 @@ pub async fn sign_up(mut req: Request<State>) -> crate::Result<Response> {
     let repository = &req.state().repository;
 
     let user = repository.create_user(user).await.map_err(|e| match e {
-        domain::CreateUserError::EmailExists => http_types::Error::new(StatusCode::BadRequest, e),
+        domain::CreateUserError::EmailExists => {
+            http_types::Error::new(http_types::StatusCode::BadRequest, e)
+        }
         _ => e.into(),
     })?;
 
@@ -26,7 +27,7 @@ pub async fn sign_up(mut req: Request<State>) -> crate::Result<Response> {
 
     let resp_body: UserResponseBody = (user, token).into();
 
-    let resp = Response::new(StatusCode::Created).body_json(&resp_body)?;
+    let resp = Response::new(http_types::StatusCode::Created).body_json(&resp_body)?;
 
     Ok(resp)
 }

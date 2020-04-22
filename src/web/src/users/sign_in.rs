@@ -2,14 +2,13 @@ use super::UserResponseBody;
 use crate::{encode_token, State};
 use repository::{domain, domain::UserRepository};
 use serde::Deserialize;
-use tide::{http_types, http_types::StatusCode, Request, Response};
+use tide::{http_types, Request, Response};
 use validator::Validate;
 
 pub async fn sign_in(mut req: Request<State>) -> crate::Result<Response> {
-    let req_body: SignInRequestBody = req
-        .body_json()
-        .await
-        .map_err(|e| Response::new(StatusCode::BadRequest).body_string(e.to_string()))?;
+    let req_body: SignInRequestBody = req.body_json().await.map_err(|e| {
+        Response::new(http_types::StatusCode::BadRequest).body_string(e.to_string())
+    })?;
 
     let _ = req_body.user.validate()?;
 
@@ -20,7 +19,7 @@ pub async fn sign_in(mut req: Request<State>) -> crate::Result<Response> {
         .await
         .map_err(|e| match e {
             domain::GetUserByEmailAndPasswordError::NotFound => {
-                http_types::Error::new(StatusCode::NotFound, e)
+                http_types::Error::new(http_types::StatusCode::NotFound, e)
             }
             _ => e.into(),
         })?;
@@ -29,7 +28,7 @@ pub async fn sign_in(mut req: Request<State>) -> crate::Result<Response> {
 
     let resp_body: UserResponseBody = (user, token).into();
 
-    let resp = Response::new(StatusCode::Ok).body_json(&resp_body)?;
+    let resp = Response::new(http_types::StatusCode::Ok).body_json(&resp_body)?;
 
     Ok(resp)
 }
