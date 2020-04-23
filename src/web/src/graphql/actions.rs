@@ -17,16 +17,16 @@ impl GraphqlSchema {
 
 //
 
-pub async fn graphql_post(mut req: Request<State>) -> Result<Response, http_types::Error> {
+pub async fn graphql_post(mut req: Request<State>) -> Result<Response, tide::Error> {
     let gql_request: GQLRequest = req
         .body_json()
         .await
-        .map_err(|e| http_types::Error::new(http_types::StatusCode::BadRequest, e))?;
+        .map_err(|e| tide::Error::new(http_types::StatusCode::BadRequest, e))?;
 
     let query_builder = gql_request
         .into_query_builder()
         .await
-        .map_err(|e| http_types::Error::new(http_types::StatusCode::BadRequest, e))?;
+        .map_err(|e| tide::Error::new(http_types::StatusCode::BadRequest, e))?;
 
     let schema = &req.state().graphql_schema.0;
 

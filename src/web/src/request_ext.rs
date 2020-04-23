@@ -4,7 +4,7 @@ use tide::{http_types, Request};
 //
 
 pub trait RequestAuthenticationExt {
-    fn require_authentication(&self) -> Result<i64, http_types::Error>;
+    fn require_authentication(&self) -> crate::Result<i64>;
 }
 
 #[derive(thiserror::Error, Debug)]
@@ -16,13 +16,13 @@ enum RequestAuthenticationExtError {
 }
 
 impl RequestAuthenticationExt for Request<State> {
-    fn require_authentication(&self) -> Result<i64, http_types::Error> {
+    fn require_authentication(&self) -> crate::Result<i64> {
         let token = self
             .header(&"Authorization".parse().unwrap())
             .map(|values| values.first().map(|value| value.as_str().to_string()))
             .unwrap_or(Some("".to_string()))
             .ok_or_else(|| {
-                http_types::Error::new(
+                tide::Error::new(
                     http_types::StatusCode::Unauthorized,
                     RequestAuthenticationExtError::TokenMissing,
                 )

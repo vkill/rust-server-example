@@ -19,7 +19,7 @@ pub async fn sign_in(mut req: Request<State>) -> crate::Result<Response> {
         .await
         .map_err(|e| match e {
             domain::GetUserByEmailAndPasswordError::NotFound => {
-                http_types::Error::new(http_types::StatusCode::NotFound, e)
+                tide::Error::new(http_types::StatusCode::NotFound, e)
             }
             _ => e.into(),
         })?;

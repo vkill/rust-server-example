@@ -18,7 +18,7 @@ pub async fn update_profile(mut req: Request<State>) -> crate::Result<Response> 
         .await
         .map_err(|e| match e {
             domain::GetUserByIDError::NotFound => {
-                http_types::Error::new(http_types::StatusCode::Forbidden, e)
+                tide::Error::new(http_types::StatusCode::Forbidden, e)
             }
             _ => e.into(),
         })?;

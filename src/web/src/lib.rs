@@ -7,7 +7,7 @@ pub use http_server::get_app as get_http_server;
 mod state;
 pub use state::State;
 
-type Result<T> = std::result::Result<T, tide::http_types::Error>;
+type Result<T> = std::result::Result<T, tide::Error>;
 
 mod token;
 use token::{decode_token, encode_token};

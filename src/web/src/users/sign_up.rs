@@ -18,7 +18,7 @@ pub async fn sign_up(mut req: Request<State>) -> crate::Result<Response> {
 
     let user = repository.create_user(user).await.map_err(|e| match e {
         domain::CreateUserError::EmailExists => {
-            http_types::Error::new(http_types::StatusCode::BadRequest, e)
+            tide::Error::new(http_types::StatusCode::BadRequest, e)
         }
         _ => e.into(),
     })?;
