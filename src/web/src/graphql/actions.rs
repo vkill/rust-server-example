@@ -1,5 +1,6 @@
 use async_graphql::http::{graphiql_source, playground_source, GQLRequest, GQLResponse};
 use async_graphql::{EmptyMutation, EmptySubscription, IntoQueryBuilder, Schema};
+use repository::Repository;
 use tide::{http_types, Request, Response};
 
 use super::{ContextUserID, QueryRoot};
@@ -8,8 +9,10 @@ use crate::{RequestAuthenticationExt, State};
 pub struct GraphqlSchema(Schema<QueryRoot, EmptyMutation, EmptySubscription>);
 
 impl GraphqlSchema {
-    pub fn new() -> Self {
-        let scheme = Schema::build(QueryRoot, EmptyMutation, EmptySubscription).finish();
+    pub fn new(repository: Repository) -> Self {
+        let scheme = Schema::build(QueryRoot, EmptyMutation, EmptySubscription)
+            .data(repository)
+            .finish();
 
         Self(scheme)
     }

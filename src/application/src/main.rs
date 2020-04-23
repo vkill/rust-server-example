@@ -27,9 +27,16 @@ async fn run_http_server(addr: String) -> anyhow::Result<()> {
         postgres_connection,
     };
 
+    let postgres_connection =
+        DBConnection::<Postgres>::new(&dotenv::var("DATABASE_URL").ok().expect("")).await?;
+
+    let repository_for_graphql = Repository {
+        postgres_connection,
+    };
+
     let jwt_hs_secret = dotenv::var("JWT_HS_SECRET").ok().expect("");
 
-    let state = web::State::new(repository, jwt_hs_secret);
+    let state = web::State::new(repository, repository_for_graphql, jwt_hs_secret);
 
     let http_server = web::get_http_server(state);
     http_server.listen(addr).await?;
