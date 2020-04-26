@@ -9,7 +9,7 @@ name = "web"
 path = "src/lib.rs"
 
 [dependencies]
-tide = "0.7.0"
+tide = "0.8.0"
 log = "0.4.8"
 serde = { version = "1.0", default-features = false, features = ["derive"] }
 surf = "2.0.0-alpha"
