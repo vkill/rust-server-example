@@ -1,7 +1,7 @@
 use async_graphql::{Context, FieldResult};
 use repository::{domain, domain::UserRepository, Repository};
 
-pub struct ContextUserID(pub Option<i64>);
+pub struct ContextUserID(pub i64);
 
 pub struct QueryRoot;
 
@@ -9,14 +9,14 @@ pub struct QueryRoot;
 impl QueryRoot {
     #[field]
     async fn current_user_id<'a>(&self, ctx: &'a Context<'_>) -> Option<i64> {
-        ctx.data::<ContextUserID>().0
+        ctx.data_opt::<ContextUserID>().map(|c| c.0)
     }
 
     #[field]
     async fn me<'a>(&self, ctx: &'a Context<'_>) -> FieldResult<User> {
         let user_id = ctx
-            .data::<ContextUserID>()
-            .0
+            .data_opt::<ContextUserID>()
+            .map(|c| c.0)
             .ok_or_else(|| "Unauthorized")?;
 
         let repository = ctx.data::<Repository>();

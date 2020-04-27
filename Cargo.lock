@@ -80,9 +80,9 @@ dependencies = [
 
 [[package]]
 name = "async-graphql"
-version = "1.9.10"
+version = "1.9.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "262c1e7bf3bdb8a6d9e574cd9ed607cf821528b147772077ebcc96fd1f16708c"
+checksum = "961ba1ab272af61936e01c7e0e6c97d44c4e0ccd81131175a97f646cac541df1"
 dependencies = [
  "Inflector",
  "anyhow",
@@ -94,6 +94,7 @@ dependencies = [
  "bytes 0.5.4",
  "chrono",
  "chrono-tz",
+ "fnv",
  "futures 0.3.4",
  "graphql-parser",
  "http 0.2.1",
@@ -115,15 +116,26 @@ dependencies = [
 
 [[package]]
 name = "async-graphql-derive"
-version = "1.9.10"
+version = "1.9.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3c5ea73f325facee627239c493ee3197e973af8c15508e93c8967e88a41b7995"
+checksum = "2469297d6296ed0b28385d89138fb6f5626098c459ff25333c14d8793d16a536"
 dependencies = [
  "Inflector",
  "graphql-parser",
  "proc-macro2",
  "quote",
  "syn",
+]
+
+[[package]]
+name = "async-graphql-tide"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bcb6273399e27e2d4f87b896de50b151f56addd460ce9435b853d0d5075000dd"
+dependencies = [
+ "async-graphql",
+ "http-types",
+ "tide",
 ]
 
 [[package]]
@@ -2749,8 +2761,8 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "async-graphql",
+ "async-graphql-tide",
  "chrono",
- "http-types",
  "jsonwebtoken",
  "log",
  "repository",

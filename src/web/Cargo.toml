@@ -20,8 +20,8 @@ chrono = { version = "0.4.11", features = ["serde"] }
 thiserror = "1.0.15"
 validator = "0.10.0"
 validator_derive = "0.10.0"
-async-graphql = "1.9.10"
-http-types = "1.2.0"
+async-graphql = "1.9.19"
+async-graphql-tide = "1.0.0"
 
 [dev-dependencies]
 anyhow = "1.0.28"
