@@ -1,15 +1,13 @@
 use crate::{RequestAuthenticationExt, State};
 use repository::{domain, domain::UserRepository};
 use serde::Deserialize;
-use tide::{Request, Response, StatusCode};
+use tide::{Request, Response, Status, StatusCode};
 
 pub async fn update_profile(mut req: Request<State>) -> tide::Result<Response> {
     let user_id = req.require_authentication()?;
 
-    let req_body: UpdateProfileRequestBody = req
-        .body_json()
-        .await
-        .map_err(|e| tide::Error::new(StatusCode::BadRequest, e))?;
+    let req_body: UpdateProfileRequestBody =
+        req.body_json().await.status(StatusCode::BadRequest)?;
     let user_profile: domain::UserProfile = req_body.into();
 
     let repository = &req.state().repository;

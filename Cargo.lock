@@ -2750,6 +2750,7 @@ dependencies = [
  "anyhow",
  "async-graphql",
  "chrono",
+ "http-types",
  "jsonwebtoken",
  "log",
  "repository",

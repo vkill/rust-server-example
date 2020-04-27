@@ -21,6 +21,7 @@ thiserror = "1.0.15"
 validator = "0.10.0"
 validator_derive = "0.10.0"
 async-graphql = "1.9.10"
+http-types = "1.2.0"
 
 [dev-dependencies]
 anyhow = "1.0.28"
