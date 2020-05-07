@@ -5,10 +5,14 @@ use repository::{Connection as DBConnection, Postgres, Repository};
 use std::path::PathBuf;
 
 fn main() -> anyhow::Result<()> {
-    dotenv().ok();
+    let proj_path = PathBuf::default();
 
-    let configuration =
-        Configuration::new(PathBuf::default()).expect("Failed to load configuration");
+    dotenv().ok();
+    if proj_path.join("src/db/.env").exists() {
+        dotenv::from_filename(proj_path.join("src/db/.env")).ok();
+    }
+
+    let configuration = Configuration::new(proj_path).expect("Failed to load configuration");
     env_logger::init();
 
     let http_server_addr = format!(

@@ -1050,6 +1050,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "heck"
+version = "0.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "20564e78d53d2bb135c343b3f47714a56af2061f1c928fdb541dc7b9fdd94205"
+dependencies = [
+ "unicode-segmentation",
+]
+
+[[package]]
 name = "hermit-abi"
 version = "0.1.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1440,6 +1449,12 @@ checksum = "14b6052be84e6b71ab17edffc2eeabf5c2c3ae1fdb464aae35ac50c67a44e1f7"
 dependencies = [
  "cfg-if",
 ]
+
+[[package]]
+name = "maplit"
+version = "1.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3e2e65a1a2e43cfcb47a895c4c8b10d1f4a61097f9f254f183aee60cad9c651d"
 
 [[package]]
 name = "matches"
@@ -2262,10 +2277,21 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6e63cff320ae2c57904679ba7cb63280a3dc4613885beafb148ee7bf9aa9042d"
 
 [[package]]
-name = "sqlx"
-version = "0.3.4"
+name = "sqlformat"
+version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a2c268cf2f045f3d8b6b54e50653e66c59d6770373b2b59ba29dea459e8294cf"
+checksum = "5ce64a4576e1720a2e511bf3ccdb8c0f6cfed0fc265bcbaa0bd369485e02c631"
+dependencies = [
+ "lazy_static",
+ "maplit",
+ "regex",
+]
+
+[[package]]
+name = "sqlx"
+version = "0.3.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8974cacd80085fbe49e778708d660dec6fb351604dc34c3905b26efb2803b038"
 dependencies = [
  "sqlx-core",
  "sqlx-macros",
@@ -2273,9 +2299,9 @@ dependencies = [
 
 [[package]]
 name = "sqlx-core"
-version = "0.3.4"
+version = "0.3.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "673fb6f30bdc14b7812a5ae22d7cc1e8e3d1debd5384eedbdf745827e9721cf3"
+checksum = "88ac5a436f941c42eac509471a730df5c3c58e1450e68cd39afedbd948206273"
 dependencies = [
  "async-native-tls",
  "async-std",
@@ -2299,18 +2325,21 @@ dependencies = [
  "rand 0.7.3",
  "sha-1",
  "sha2",
+ "sqlformat",
+ "tokio",
  "url 2.1.1",
 ]
 
 [[package]]
 name = "sqlx-macros"
-version = "0.3.4"
+version = "0.3.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0de981547a9e8c15336b30079ca040ca252aa91c071e05298d699981d6dec041"
+checksum = "de2ae78b783af5922d811b14665a5a3755e531c3087bb805cf24cf71f15e6780"
 dependencies = [
  "async-std",
  "dotenv",
  "futures 0.3.4",
+ "heck",
  "proc-macro2",
  "quote",
  "sqlx-core",
@@ -2503,6 +2532,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "tokio"
+version = "0.2.20"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "05c1d570eb1a36f0345a5ce9c6c6e665b70b73d11236912c0b477616aeec47b1"
+dependencies = [
+ "bytes 0.5.4",
+ "iovec",
+ "lazy_static",
+ "libc",
+ "memchr",
+ "mio",
+ "mio-uds",
+ "pin-project-lite",
+ "slab",
+]
+
+[[package]]
 name = "tokio-io"
 version = "0.1.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2560,6 +2606,12 @@ checksum = "5479532badd04e128284890390c1e876ef7a993d0570b3597ae43dfa1d59afa4"
 dependencies = [
  "smallvec",
 ]
+
+[[package]]
+name = "unicode-segmentation"
+version = "1.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e83e153d1053cbb5a118eeff7fd5be06ed99153f00dbcd8ae310c5fb2b22edc0"
 
 [[package]]
 name = "unicode-xid"
